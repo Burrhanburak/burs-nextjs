@@ -1,15 +1,15 @@
 'use client';
 
-import { useState } from "react"
-import { signIn } from "next-auth/react"
-import { Button } from "@/components/ui/button"
-import { Input } from "@/components/ui/input"
-import { toast } from "sonner"
-import { zodResolver } from "@hookform/resolvers/zod"
-import { useForm } from "react-hook-form"
-import { z } from "zod"
-import { useSearchParams } from "next/navigation"
-import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from "@/components/ui/form"
+import { useState } from "react";
+import { signIn } from "next-auth/react";
+import { Button } from "@/components/ui/button";
+import { Input } from "@/components/ui/input";
+import { toast } from "sonner";
+import { zodResolver } from "@hookform/resolvers/zod";
+import { useForm } from "react-hook-form";
+import { z } from "zod";
+import { useSearchParams } from "next/navigation";
+import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from "@/components/ui/form";
 
 const formSchema = z.object({
   email: z.string().email({
@@ -18,12 +18,12 @@ const formSchema = z.object({
   password: z.string().min(1, {
     message: "Şifre alanı boş bırakılamaz.",
   }),
-})
+});
 
 export function LoginForm() {
-  const [isLoading, setIsLoading] = useState(false)
-  const searchParams = useSearchParams()
-  const callbackUrl = searchParams.get("callbackUrl") || ""
+  const [isLoading, setIsLoading] = useState(false);
+  const searchParams = useSearchParams();
+  const callbackUrl = searchParams.get("callbackUrl") || "";
   
   const form = useForm<z.infer<typeof formSchema>>({
     resolver: zodResolver(formSchema),
@@ -31,48 +31,56 @@ export function LoginForm() {
       email: "",
       password: "",
     },
-  })
+  });
 
   async function onSubmit(values: z.infer<typeof formSchema>) {
-    setIsLoading(true)
+    setIsLoading(true);
 
     try {
+      // Önemli değişiklik - callbackUrl'i doğrudan buraya gönderiyoruz
       const result = await signIn("credentials", {
         email: values.email,
         password: values.password,
-        redirect: false,
-        // callbackUrl: callbackUrl || undefined,
-      })
+        redirect: true,
+        callbackUrl: callbackUrl || "/user/dashboard",
+      });
+      console.log("Login result:", result);
+      
+      // signIn fonksiyonu redirect: true ile çağrıldığında,
+      // bu noktadan sonraki kod çalışmayacaktır çünkü sayfa yönlendirilmiş olacak
 
+      // Aşağıdaki kısım artık gerekli değil
+      /*
       if (result?.error) {
-        toast("Email veya şifre hatalı")
-        setIsLoading(false)
-        return
+        toast("Email veya şifre hatalı");
+        setIsLoading(false);
+        return;
       }
 
       // Fetch user session to get role
-      const response = await fetch('/api/auth/session')
-      const session = await response.json()
+      const response = await fetch('/api/auth/session');
+      const session = await response.json();
       
       // First set loading to false
-      setIsLoading(false)
+      setIsLoading(false);
       
       // Use the callbackUrl if provided, otherwise redirect based on role
-      let redirectUrl = "/user/dashboard"
+      let redirectUrl = "/user/dashboard";
       
       if (callbackUrl) {
-        redirectUrl = callbackUrl
+        redirectUrl = callbackUrl;
       } else if (session?.user?.role === 'ADMIN') {
-        redirectUrl = "/admin/dashboard"
+        redirectUrl = "/admin/dashboard";
       }
       
       // Add a small delay before navigation to allow state updates to complete
       setTimeout(() => {
-        window.location.href = redirectUrl
-      }, 100)
+        window.location.href = redirectUrl;
+      }, 100);
+      */
     } catch {
-      toast("Bir hata oluştu")
-      setIsLoading(false)
+      toast("Bir hata oluştu");
+      setIsLoading(false);
     }
   }
 
@@ -110,5 +118,5 @@ export function LoginForm() {
         </Button>
       </form>
     </Form>
-  )
+  );
 }

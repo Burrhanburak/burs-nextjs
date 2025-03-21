@@ -1,6 +1,8 @@
 import type { NextAuthConfig } from "next-auth";
 import GoogleProvider from "next-auth/providers/google";
+import CredentialsProvider from "next-auth/providers/credentials";
 import { db } from "@/lib/db";
+import bcrypt from "bcrypt"; // Şifre karşılaştırması için
 
 const authConfig: NextAuthConfig = {
   secret: process.env.AUTH_SECRET,
@@ -38,7 +40,47 @@ const authConfig: NextAuthConfig = {
         };
       },
     }),
-    // Diğer provider'lar eklenebilir...
+    CredentialsProvider({
+      name: "Credentials",
+      credentials: {
+        email: { label: "Email", type: "email" },
+        password: { label: "Şifre", type: "password" }
+      },
+      async authorize(credentials) {
+        if (!credentials?.email || !credentials?.password) {
+          return null;
+        }
+
+        try {
+          // Veritabanından kullanıcı sorgusu
+          const user = await db.user.findUnique({
+            where: { email: credentials.email }
+          });
+
+          if (!user || !user.password) {
+            return null;
+          }
+
+          // Şifre doğrulama - bcrypt kullanıyorsanız
+          const passwordMatch = await bcrypt.compare(credentials.password, user.password);
+          
+          if (!passwordMatch) {
+            return null;
+          }
+
+          return {
+            id: user.id,
+            name: `${user.firstName || ''} ${user.lastName || ''}`.trim(),
+            email: user.email,
+            role: user.role,
+            image: user.image || null
+          };
+        } catch (error) {
+          console.error("Auth error:", error);
+          return null;
+        }
+      }
+    })
   ],
   callbacks: {
     async jwt({ token, user }) {
@@ -54,7 +96,7 @@ const authConfig: NextAuthConfig = {
         if (dbUser) {
           token.id = dbUser.id;
           token.role = dbUser.role;
-          token.name = `${dbUser.firstName} ${dbUser.lastName}`;
+          token.name = `${dbUser.firstName || ''} ${dbUser.lastName || ''}`.trim();
         }
       }
       return token;
@@ -69,6 +111,9 @@ const authConfig: NextAuthConfig = {
       return session;
     },
     async redirect({ url, baseUrl }) {
+      // Debugging
+      console.log("Redirect callback:", { url, baseUrl });
+      
       // Eğer URL'de tekrarlayan callbackUrl parametresi varsa temizle
       if (url.includes('callbackUrl=') && url.includes('callbackUrl=', url.indexOf('callbackUrl=') + 12)) {
         // İlk callbackUrl değerini bul
@@ -80,12 +125,24 @@ const authConfig: NextAuthConfig = {
         
         // Tekrarlayan callbackUrl parametresini temizle
         const cleanedUrl = url.replace(/callbackUrl=.*callbackUrl=/, firstCallbackValue);
+        console.log("Cleaned URL:", cleanedUrl);
         return cleanedUrl;
       }
       
-      // Normal yönlendirme mantığı
-      if (url.startsWith("/")) return `${baseUrl}${url}`;
-      else if (new URL(url).origin === baseUrl) return url;
+      // URL decode et - encoded parametreleri düzgün işlemek için
+      try {
+        const decodedUrl = decodeURIComponent(url);
+        
+        // Normal yönlendirme mantığı
+        if (decodedUrl.startsWith("/")) {
+          return `${baseUrl}${decodedUrl}`;
+        } else if (new URL(decodedUrl).origin === baseUrl) {
+          return decodedUrl;
+        }
+      } catch (error) {
+        console.error("URL decode error:", error);
+      }
+      
       return baseUrl;
     },
     async signIn() {
