@@ -35,55 +35,46 @@ export function LoginForm() {
 
   async function onSubmit(values: z.infer<typeof formSchema>) {
     setIsLoading(true);
-
+    console.log("Login attempt with:", { 
+      email: values.email, 
+      callbackUrl: callbackUrl || "/user/dashboard" 
+    });
+  
     try {
-      // Önemli değişiklik - callbackUrl'i doğrudan buraya gönderiyoruz
+      // Log pre-signin state
+      console.log("About to call signIn with credentials");
+      
       const result = await signIn("credentials", {
         email: values.email,
         password: values.password,
-        redirect: true,
+        redirect: false, // Change to false to see the response
         callbackUrl: callbackUrl || "/user/dashboard",
       });
-      console.log("Login result:", result);
       
-      // signIn fonksiyonu redirect: true ile çağrıldığında,
-      // bu noktadan sonraki kod çalışmayacaktır çünkü sayfa yönlendirilmiş olacak
-
-      // Aşağıdaki kısım artık gerekli değil
-      /*
+      console.log("SignIn result:", result);
+      
       if (result?.error) {
-        toast("Email veya şifre hatalı");
+        toast.error(`Login failed: ${result.error}`);
         setIsLoading(false);
         return;
       }
-
-      // Fetch user session to get role
-      const response = await fetch('/api/auth/session');
-      const session = await response.json();
       
-      // First set loading to false
-      setIsLoading(false);
-      
-      // Use the callbackUrl if provided, otherwise redirect based on role
-      let redirectUrl = "/user/dashboard";
-      
-      if (callbackUrl) {
-        redirectUrl = callbackUrl;
-      } else if (session?.user?.role === 'ADMIN') {
-        redirectUrl = "/admin/dashboard";
+      if (result?.url) {
+        // Successful login with redirect URL
+        console.log("Redirecting to:", result.url);
+        window.location.href = result.url;
+      } else {
+        // Handle unexpected response
+        console.error("Unexpected auth response:", result);
+        toast.error("Beklenmeyen bir hata oluştu");
+        setIsLoading(false);
       }
-      
-      // Add a small delay before navigation to allow state updates to complete
-      setTimeout(() => {
-        window.location.href = redirectUrl;
-      }, 100);
-      */
-    } catch {
-      toast("Bir hata oluştu");
+    } catch (error) {
+      console.error("Login error:", error);
+      toast.error("Giriş sırasında bir hata oluştu");
       setIsLoading(false);
     }
   }
-
   return (
     <Form {...form}>
       <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-4">
