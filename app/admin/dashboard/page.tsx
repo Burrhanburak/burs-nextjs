@@ -57,6 +57,8 @@ import {
 } from "lucide-react"
 import { getApplications } from "@/lib/server-actions"
 import { toast } from "sonner"
+import { useSession } from "next-auth/react"
+import { useRouter } from "next/navigation"
 
 // Application interface to replace all 'any' types
 interface Application {
@@ -207,6 +209,9 @@ function DocumentStatusBadge({ status }: { status: string }) {
 }
 
 export default function AdminDashboardPage() {
+  const { data: session, status } = useSession()
+  const router = useRouter()
+  
   const [searchTerm, setSearchTerm] = useState("")
   const [selectedApplication, setSelectedApplication] = useState<Application | null>(null)
   const [filterStatus, setFilterStatus] = useState<string>("all")
@@ -223,6 +228,19 @@ export default function AdminDashboardPage() {
   const [isLoadingDocuments, setIsLoadingDocuments] = useState(false)
   const [selectedDocument, setSelectedDocument] = useState<{url: string, type: string, name?: string} | null>(null)
   const [isDocumentViewOpen, setIsDocumentViewOpen] = useState(false)
+
+  // Check authentication and admin role
+  useEffect(() => {
+    if (status === "unauthenticated") {
+      router.push("/auth/login")
+      return
+    }
+    
+    if (session && session.user.role !== "ADMIN") {
+      router.push("/user/dashboard")
+      return
+    }
+  }, [session, status, router])
 
   // Fetch data from the database
   useEffect(() => {

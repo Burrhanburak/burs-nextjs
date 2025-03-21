@@ -113,12 +113,18 @@ interface DashboardData {
 }
 
 export default function DashboardPage() {
-  const { data: session } = useSession()
+  const { data: session, status } = useSession()
   const [dashboardData, setDashboardData] = useState<DashboardData | null>(null)
   const [loading, setLoading] = useState(true)
   const router = useRouter()
 
   useEffect(() => {
+    // Redirect to login if no session
+    if (status === "unauthenticated") {
+      router.push("/auth/login")
+      return
+    }
+    
     const fetchData = async () => {
       if (session?.user?.id) {
         try {

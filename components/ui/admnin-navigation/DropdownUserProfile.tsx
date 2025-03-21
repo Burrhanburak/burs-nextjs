@@ -18,7 +18,7 @@ import { RiLogoutBoxRLine } from "@remixicon/react"
 import { Monitor, Moon, Sun } from "lucide-react"
 import { useTheme } from "next-themes"
 import * as React from "react"
-import { SignOut } from "@/components/auth/signout-button"
+import { signOut } from "next-auth/react"
 
 interface AdminData {
   name?: string;
@@ -48,10 +48,10 @@ export function DropdownUserProfile({
     return null
   }
 
+  const handleSignOut = async () => {
+    await signOut({ callbackUrl: '/auth/login' });
+  };
 
-  // const handleLogout = async () => {
-  //   await signOut({ callbackUrl: '/auth/login' });
-  // };
   return (
     <>
       <DropdownMenu>
@@ -102,7 +102,7 @@ export function DropdownUserProfile({
           <DropdownMenuSeparator />
           <DropdownMenuGroup>
             <DropdownMenuItem>
-            <div className="flex w-full items-center text-red-600 hover:text-red-700 dark:text-red-500 dark:hover:text-red-400" onClick={SignOut}>
+              <div className="flex w-full items-center text-red-600 hover:text-red-700 dark:text-red-500 dark:hover:text-red-400" onClick={handleSignOut}>
                 <RiLogoutBoxRLine className="mr-2 h-4 w-4" />
                 Çıkış Yap
               </div>
