@@ -33,7 +33,7 @@ const authConfig: NextAuthConfig = {
           name: profile.name,
           email: profile.email,
           image: profile.picture,
-          role: "user", // Varsayılan role, isteğe göre değiştirilebilir
+          role: "user", // This sets default role to "user"
         };
       },
     }),
