@@ -317,54 +317,67 @@ const config = {
       if (user) {
         token.id = user.id;
         token.role = user.role;
-        return token;
+        token.name = user.name;
+        token.email = user.email;
+        token.role = user.role;
+      
+      } else if (!token.role && token.email) {
+        // Sonraki isteklerde token içinde role eksikse, veritabanından çekin
+        const dbUser = await db.user.findUnique({
+          where: { email: token.email as string },
+        });
+        if (dbUser) {
+          token.id = dbUser.id;
+          token.role = dbUser.role;
+          token.name = `${dbUser.firstName} ${dbUser.lastName}`;
+        }
       }
       
       // On subsequent requests, try to fetch the user again to ensure role is up to date
-      try {
-        const dbUser = await db.user.findFirst({
-          where: {
-            email: token.email as string,
-          },
-        });
+      // try {
+      //   const dbUser = await db.user.findFirst({
+      //     where: {
+      //       email: token.email as string,
+      //     },
+      //   });
   
-        if (dbUser) {
-          token.id = dbUser.id;
-          token.name = `${dbUser.firstName} ${dbUser.lastName}`;
-          token.email = dbUser.email;
-          token.role = dbUser.role;
+      //   if (dbUser) {
+      //     token.id = dbUser.id;
+      //     token.name = `${dbUser.firstName} ${dbUser.lastName}`;
+      //     token.email = dbUser.email;
+      //     token.role = dbUser.role;
           
-          // Debugging in development
-          if (process.env.NODE_ENV === 'development') {
-            console.log('JWT Token Updated:', { 
-              id: token.id,
-              email: token.email,
-              role: token.role 
-            });
-          }
-        } 
-        // If user not found in User table, set role based on email domain or other checks
-        else {
-          // Check if this user should be an admin
-          // This is a safer approach since the Admin model isn't accessible directly
-          if (token.email && [
-            'admin@example.com',
+      //     // Debugging in development
+      //     if (process.env.NODE_ENV === 'development') {
+      //       console.log('JWT Token Updated:', { 
+      //         id: token.id,
+      //         email: token.email,
+      //         role: token.role 
+      //       });
+      //     }
+      //   } 
+      //   // If user not found in User table, set role based on email domain or other checks
+      //   else {
+      //     // Check if this user should be an admin
+      //     // This is a safer approach since the Admin model isn't accessible directly
+      //     if (token.email && [
+      //       'admin@example.com',
            
-            // Add any other admin emails
-          ].includes(token.email as string)) {
-            token.role = 'ADMIN';
+      //       // Add any other admin emails
+      //     ].includes(token.email as string)) {
+      //       token.role = 'ADMIN';
             
-            if (process.env.NODE_ENV === 'development') {
-              console.log('Special Admin JWT Token Updated:', { 
-                email: token.email,
-                role: token.role 
-              });
-            }
-          }
-        }
-      } catch (error) {
-        console.error('JWT Callback Error:', error);
-      }
+      //       if (process.env.NODE_ENV === 'development') {
+      //         console.log('Special Admin JWT Token Updated:', { 
+      //           email: token.email,
+      //           role: token.role 
+      //         });
+      //       }
+      //     }
+      //   }
+      // } catch (error) {
+      //   console.error('JWT Callback Error:', error);
+      // }
   
       return token;
     }
@@ -397,10 +410,10 @@ export async function getUserById(userId: string) {
   return user
 }
 
-export async function getAdminById(adminId: string) {
+export async function getAdminById(userId: string) {
   const admin = await db.user.findFirst({
     where: { 
-      id: adminId,
+      id: userId,
       role: "ADMIN"
     },
   })
