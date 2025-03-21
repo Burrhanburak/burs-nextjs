@@ -231,10 +231,22 @@ const config = {
     strategy: "jwt",
   },
   secret: process.env.AUTH_SECRET,
+  trustHost: true,
   pages: {
     signIn: "/auth/login",
     signOut: "/auth/login",
     error: "/auth/error",
+  },
+  cookies: {
+    csrfToken: {
+      name: "next-auth.csrf-token",
+      options: {
+        httpOnly: true,
+        sameSite: "lax",
+        path: "/",
+        secure: process.env.NODE_ENV === "production"
+      }
+    }
   },
   providers: [
     GoogleProvider({
@@ -281,7 +293,7 @@ const config = {
     })
   ],
   callbacks: {
-    async signIn({ user, account, profile, email, credentials }) {
+    async signIn() {
       return true;
     },
     async redirect({ url, baseUrl }) {
