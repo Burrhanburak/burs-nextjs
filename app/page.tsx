@@ -31,7 +31,7 @@ export default async function HomePage() {
             <div className="flex flex-col items-center text-center space-y-6 md:space-y-8">
               <div className="inline-flex items-center px-3 py-1 rounded-full border border-gray-200 bg-white/50 backdrop-blur-sm dark:border-gray-800 dark:bg-gray-900/50">
                 <span className="text-sm font-medium text-gray-900 dark:text-gray-100">
-                  Burs Başvuruları Artık Açık
+                  Burs Başvuruları Açık
                 </span>
                 <div className="w-2 h-2 ml-2 rounded-full bg-green-500 animate-pulse" />
               </div>
