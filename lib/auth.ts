@@ -313,26 +313,64 @@ const config = {
       return session;
     },
     async jwt({ token, user }) {
-      const dbUser = await db.user.findFirst({
-        where: {
-          email: token.email as string,
-        },
-      });
-
-      if (!dbUser) {
-        if (user) {
-          token.id = user?.id;
-          token.role = user?.role;
-        }
+      // If this is a sign-in
+      if (user) {
+        token.id = user.id;
+        token.role = user.role;
         return token;
       }
-
-      return {
-        id: dbUser.id,
-        name: `${dbUser.firstName} ${dbUser.lastName}`,
-        email: dbUser.email,
-        role: dbUser.role,
-      };
+      
+      // On subsequent requests, try to fetch the user again to ensure role is up to date
+      try {
+        const dbUser = await db.user.findFirst({
+          where: {
+            email: token.email as string,
+          },
+        });
+  
+        if (dbUser) {
+          token.id = dbUser.id;
+          token.name = `${dbUser.firstName} ${dbUser.lastName}`;
+          token.email = dbUser.email;
+          token.role = dbUser.role;
+          
+          // Debugging in development
+          if (process.env.NODE_ENV === 'development') {
+            console.log('JWT Token Updated:', { 
+              id: token.id,
+              email: token.email,
+              role: token.role 
+            });
+          }
+        } 
+        // If user not found in User table, check Admin table as fallback
+        else {
+          const adminUser = await db.admin.findFirst({
+            where: {
+              email: token.email as string,
+            },
+          });
+          
+          if (adminUser) {
+            token.id = adminUser.id;
+            token.name = adminUser.name;
+            token.email = adminUser.email;
+            token.role = 'ADMIN'; // Set role explicitly for Admin users
+            
+            if (process.env.NODE_ENV === 'development') {
+              console.log('Admin JWT Token Updated:', { 
+                id: token.id, 
+                email: token.email,
+                role: token.role 
+              });
+            }
+          }
+        }
+      } catch (error) {
+        console.error('JWT Callback Error:', error);
+      }
+  
+      return token;
     }
   }
 } satisfies NextAuthConfig;

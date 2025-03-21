@@ -28,6 +28,18 @@ export async function middleware(request: NextRequest) {
     secret: process.env.AUTH_SECRET!,
     secureCookie: process.env.NEXTAUTH_URL?.startsWith("https://"),
   });
+  
+  // Add detailed logging for debugging auth issues
+  if (process.env.NODE_ENV === 'production' && (pathname.startsWith('/admin') || protectedRoutes.some(route => pathname.startsWith(route)))) {
+    console.log('Auth Debug:', { 
+      path: pathname, 
+      hasToken: !!token,
+      tokenKeys: token ? Object.keys(token) : null,
+      role: token?.role,
+      cookieHeader: request.headers.get('cookie')?.substring(0, 100) // First 100 chars for privacy
+    });
+  }
+  
   const session = token // Session ve token aynı yapıda
 
     // 1. Debug için (Production'da kapatın)
@@ -43,7 +55,7 @@ export async function middleware(request: NextRequest) {
   }
    // 2. Admin rotaları için katı kontrol
    if (pathname.startsWith('/admin')) {
-    if (!token) {
+    if (!token?.role || !["ADMIN"].includes(token.role)) {
       const loginUrl = new URL('/auth/login', request.url)
       loginUrl.searchParams.set('callbackUrl', pathname)
       return NextResponse.redirect(loginUrl)
