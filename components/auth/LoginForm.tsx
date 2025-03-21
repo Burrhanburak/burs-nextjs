@@ -130,7 +130,9 @@ const formSchema = z.object({
 export function LoginForm() {
   const [isLoading, setIsLoading] = useState(false)
   const searchParams = useSearchParams()
-  const callbackUrl = searchParams.get("callbackUrl") || ""
+  // const callbackUrl = searchParams.get("callbackUrl") || ""
+  const callbackUrl = searchParams.get("callbackUrl") || "/user/dashboard";
+  
   
   const form = useForm<z.infer<typeof formSchema>>({
     resolver: zodResolver(formSchema),
@@ -158,24 +160,24 @@ export function LoginForm() {
       }
 
       // Fetch user session to get role
-      const response = await fetch('/api/auth/session')
-      const session = await response.json()
+      // const response = await fetch('/api/auth/session')
+      // const session = await response.json()
       
       // First set loading to false
       setIsLoading(false)
       
-      // Use the callbackUrl if provided, otherwise redirect based on role
-      let redirectUrl = "/user/dashboard"
+      // // Use the callbackUrl if provided, otherwise redirect based on role
+      // let redirectUrl = "/user/dashboard"
       
-      if (callbackUrl) {
-        redirectUrl = callbackUrl
-      } else if (session?.user?.role === 'ADMIN') {
-        redirectUrl = "/admin/dashboard"
-      }
+      // if (callbackUrl) {
+      //   redirectUrl = callbackUrl
+      // } else if (session?.user?.role === 'ADMIN') {
+      //   redirectUrl = "/admin/dashboard"
+      // }
       
       // Add a small delay before navigation to allow state updates to complete
       setTimeout(() => {
-        window.location.href = redirectUrl
+        window.location.href = callbackUrl;
       }, 100)
     } catch {
       toast("Bir hata oluştu")
