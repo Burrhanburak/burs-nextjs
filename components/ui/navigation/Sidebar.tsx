@@ -16,11 +16,11 @@ import MobileSidebar from "./MobileSidebar"
 import { UserProfileDesktop, UserProfileMobile } from "./UserProfile"
 
 const navigation = [
-  { name: "Dashboard", href: "/dashboard", icon: RiDashboardLine },
-  { name: "Başvurularım", href: "/applications", icon: RiFileListLine },
-  { name: "Evraklarım", href: "/documents", icon: RiFileLine },
-  { name: "Bildirimler", href: "/notifications", icon: RiNotificationLine },
-  { name: "Profilim", href: "/profile", icon: RiUserLine },
+  { name: "Dashboard", href: "/user/dashboard", icon: RiDashboardLine },
+  { name: "Başvurularım", href: "/user/applications", icon: RiFileListLine },
+  { name: "Evraklarım", href: "/user/documents", icon: RiFileLine },
+  { name: "Bildirimler", href: "/user/notifications", icon: RiNotificationLine },
+  { name: "Profilim", href: "/user/profile", icon: RiUserLine },
 ] as const
 
 interface SidebarProps {
@@ -46,7 +46,7 @@ export function Sidebar({ isCollapsed, toggleSidebar }: SidebarProps) {
           <div className="flex items-center justify-between mb-6 px-2">
             <div className="flex items-center">
               {!isCollapsed && (
-                <Link href="/dashboard" className="flex items-center gap-2">
+                <Link href="/user/dashboard" className="flex items-center gap-2">
                   <div className="flex h-8 w-8 items-center justify-center rounded-md bg-indigo-600 text-white">
                     <RiHomeSmileLine className="h-5 w-5" />
                   </div>
@@ -54,7 +54,7 @@ export function Sidebar({ isCollapsed, toggleSidebar }: SidebarProps) {
                 </Link>
               )}
               {isCollapsed && (
-                <Link href="/dashboard" className="flex items-center justify-center">
+                <Link href="/user/dashboard" className="flex items-center justify-center">
                   <div className="flex h-9 w-9 items-center justify-center rounded-md bg-indigo-600 text-white">
                     <RiHomeSmileLine className="h-5 w-5" />
                   </div>
@@ -113,7 +113,7 @@ export function Sidebar({ isCollapsed, toggleSidebar }: SidebarProps) {
       
       {/* Mobile header (xs-lg) */}
       <div className="sticky top-0 z-40 flex h-16 shrink-0 items-center justify-between border-b border-gray-200 bg-white px-4 shadow-sm lg:hidden dark:border-gray-800 dark:bg-gray-900">
-        <Link href="/dashboard" className="flex items-center gap-2">
+        <Link href="/user/dashboard" className="flex items-center gap-2">
           <div className="flex h-8 w-8 items-center justify-center rounded-md bg-indigo-600 text-white">
             <RiHomeSmileLine className="h-5 w-5" />
           </div>

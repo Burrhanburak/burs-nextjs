@@ -8,9 +8,13 @@ import Logo from "@/components/Icon-logo"
 export default async function HomePage() {
   const session = await auth()
   
-  // If user is logged in, redirect them to dashboard
+  // If user is logged in, redirect them to dashboard based on role
   if (session) {
-    redirect("/dashboard")
+    if (session.user.role === "ADMIN") {
+      redirect("/admin/dashboard")
+    } else {
+      redirect("/user/dashboard")
+    }
   }
   
   // Otherwise show landing page for non-authenticated users

@@ -35,17 +35,17 @@ export default function AdminLoginPage() {
         return
       }
 
-      // Check if the user is an admin
-      const user = await fetch("/api/users/me").then((res) => res.json())
+         // Check if the user is an admin
+         const user = await fetch("/api/users/me").then((res) => res.json())
 
-      if (user && user.role === "ADMIN") {
-        // Redirect the admin user to the specified callback URL
-        router.push(callbackUrl)
-      } else {
-        console.log("Access denied. Admin only.")
-        // Sign out the non-admin user
-        await signIn("credentials", { redirect: false, action: "signout" })
-      }
+         if (user && user.role === "ADMIN") {
+           // Redirect the admin user to the specified callback URL
+           router.push(callbackUrl)
+         } else {
+           console.log("Access denied. Admin only.")
+           // Sign out the non-admin user
+           await signIn("credentials", { redirect: false, action: "signout" })
+         }
 
       router.refresh()
     } catch (e) {
