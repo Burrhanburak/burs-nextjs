@@ -12,7 +12,7 @@ import {
 import { cx, focusInput } from "@/lib/utils"
 import { RiArrowRightSLine, RiExpandUpDownLine, RiLogoutBoxLine, RiUserSettingsLine } from "@remixicon/react"
 import React, { useEffect, useState } from "react"
-import { signOut } from "next-auth/react"
+import { SignOut } from "@/components/auth/signout-button"
 
 interface UserData {
   name?: string;
@@ -71,9 +71,7 @@ export const WorkspacesDropdownDesktop = () => {
   const displayName = userData.name || `${userData.firstName || ''} ${userData.lastName || ''}`.trim();
   const role = userData.role === 'ADMIN' ? 'Yönetici' : 'Bursiyer';
 
-  const handleLogout = async () => {
-    await signOut({ callbackUrl: '/auth/login' });
-  };
+
 
   return (
     <>
@@ -151,7 +149,7 @@ export const WorkspacesDropdownDesktop = () => {
               Profili Düzenle
             </div>
           </DropdownMenuItem>
-          <DropdownMenuItem onClick={handleLogout}>
+          <DropdownMenuItem onClick={SignOut}>
             <div className="flex items-center text-red-600">
               <RiLogoutBoxLine className="mr-2 h-4 w-4" />
               Çıkış Yap
@@ -212,9 +210,9 @@ export const WorkspacesDropdownMobile = () => {
   const displayName = userData.name || `${userData.firstName || ''} ${userData.lastName || ''}`.trim();
   const role = userData.role === 'ADMIN' ? 'Yönetici' : 'Bursiyer';
 
-  const handleLogout = async () => {
-    await signOut({ callbackUrl: '/auth/login' });
-  };
+  // const handleLogout = async () => {
+  //   await signOut({ callbackUrl: '/auth/login' });
+  // };
 
   return (
     <>
@@ -293,7 +291,7 @@ export const WorkspacesDropdownMobile = () => {
             Profili Düzenle
           </div>
         </DropdownMenuItem>
-        <DropdownMenuItem onClick={handleLogout}>
+        <DropdownMenuItem onClick={SignOut}>
           <div className="flex items-center text-red-600">
             <RiLogoutBoxLine className="mr-2 h-4 w-4" />
             Çıkış Yap

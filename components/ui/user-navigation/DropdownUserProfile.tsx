@@ -23,8 +23,7 @@ import {
 } from "@remixicon/react"
 import { useTheme } from "next-themes"
 import * as React from "react"
-import { signOut } from "next-auth/react"
-
+import { SignOut } from "@/components/auth/signout-button"
 interface UserData {
   name?: string;
   email?: string;
@@ -53,9 +52,9 @@ export function DropdownUserProfile({
     return null
   }
 
-  const handleLogout = async () => {
-    await signOut({ callbackUrl: '/auth/login' });
-  };
+  // const handleLogout = async () => {
+  //   await signOut({ callbackUrl: '/auth/login' });
+  // };
 
   return (
     <>
@@ -118,7 +117,7 @@ export function DropdownUserProfile({
           <DropdownMenuSeparator />
           <DropdownMenuGroup>
             <DropdownMenuItem>
-            <div className="flex w-full items-center text-red-600 hover:text-red-700 dark:text-red-500 dark:hover:text-red-400" onClick={handleLogout}>
+            <div className="flex w-full items-center text-red-600 hover:text-red-700 dark:text-red-500 dark:hover:text-red-400" onClick={SignOut}>
                 <RiLogoutBoxLine className="mr-2 h-4 w-4" />
                 Çıkış Yap
               </div>

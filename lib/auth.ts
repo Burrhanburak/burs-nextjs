@@ -37,6 +37,7 @@ const config = {
   secret: process.env.AUTH_SECRET,
   pages: {
     signIn: "/auth/login",
+    signOut: "/auth/login",
     error: "/auth/error",
   },
   providers: [

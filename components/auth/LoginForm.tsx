@@ -21,7 +21,7 @@ const formSchema = z.object({
 
 export function LoginForm() {
   const [isLoading, setIsLoading] = useState(false)
-  
+
   const form = useForm<z.infer<typeof formSchema>>({
     resolver: zodResolver(formSchema),
     defaultValues: {
@@ -53,12 +53,13 @@ export function LoginForm() {
       // First set loading to false before navigation
       setIsLoading(false)
       
+      
       // Add a small delay before navigation to allow state updates to complete
       setTimeout(() => {
         if (session?.user?.role === 'ADMIN') {
           window.location.href = "/admin/dashboard"
         } else {
-          window.location.href = "/dashboard"
+          window.location.href = "/user/dashboard"
         }
       }, 100)
     } catch {
