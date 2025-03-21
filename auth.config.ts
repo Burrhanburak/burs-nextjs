@@ -43,8 +43,8 @@ const authConfig: NextAuthConfig = {
     async jwt({ token, user }) {
       if (user) {
         token.id = user.id;
-        token.name = user.name;
-        token.email = user.email;
+        token.name = user.name || undefined;
+        token.email = user.email || undefined;
         token.role = user.role;
       } else if (!token.role && token.email) {
         const dbUser = await db.user.findUnique({

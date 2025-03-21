@@ -149,6 +149,9 @@ const adminRoutes = [
 export async function middleware(request: NextRequest) {
   const { pathname } = request.nextUrl;
 
+  console.log("Middleware User:", request.auth?.user);
+  console.log("User role:", request.auth?.user?.role);
+
   // Token alınması
   const token = await getToken({
     req: request,
