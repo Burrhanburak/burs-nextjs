@@ -37,7 +37,9 @@ export async function middleware(request: NextRequest) {
   if (protectedRoutes.some(route => pathname.startsWith(route))) {
     // If not logged in, redirect to login
     if (!session) {
-      return NextResponse.redirect(new URL("/admin/login", request.url))
+      const url = new URL("/auth/login", request.url)
+      url.searchParams.set("callbackUrl", pathname)
+      return NextResponse.redirect(url)
     }
 
     // Temporarily disabled email verification check
@@ -55,9 +57,7 @@ export async function middleware(request: NextRequest) {
   if (adminRoutes.some(route => pathname.startsWith(route))) {
     // If not logged in, redirect to admin login
     if (!session) {
-      const url = new URL("/admin/login", request.url)
-      url.searchParams.set("callbackUrl", pathname)
-      return NextResponse.redirect(url)
+      return NextResponse.redirect(new URL("/admin/login", request.url))
     }
 
     // If not admin, redirect to dashboard
