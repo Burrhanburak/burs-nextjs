@@ -24,6 +24,18 @@ const nextConfig: NextConfig = {
     serverActions: {
       bodySizeLimit: '2mb',
     },
+  }, async headers() {
+    return [
+      {
+        source: '/(.*)',
+        headers: [
+          {
+            key: 'x-middleware-request-host',
+            value: 'burs-nextjs.vercel.app',
+          },
+        ],
+      },
+    ];
   },
   webpack: (config, { isServer }) => {
     // Fix for building standalone output

@@ -22,11 +22,20 @@ const adminRoutes = [
 
 export async function middleware(request: NextRequest) {
   const { pathname } = request.nextUrl  
-  const token = await getToken({ req: request, secret: process.env.AUTH_SECRET })
+  // const token = await getToken({ req: request, secret: process.env.AUTH_SECRET })
+  const token = await getToken({
+    req: request,
+    secret: process.env.AUTH_SECRET!,
+    secureCookie: process.env.NEXTAUTH_URL?.startsWith("https://"),
+  });
   const session = token // Session ve token aynı yapıda
 
     // 1. Debug için (Production'da kapatın)
-    console.log('Middleware Çalıştı:', { path: pathname, role: token?.role })
+    if (protectedRoutes.some(route => pathname.startsWith(route)) || 
+        adminRoutes.some(route => pathname.startsWith(route)) || 
+        process.env.NODE_ENV === 'development') {
+      console.log('Middleware Çalıştı:', { path: pathname, role: token?.role })
+    }
   // Debug için (production'da kaldırın)
   if (process.env.NODE_ENV === 'development') {
     console.log('Path:', pathname)

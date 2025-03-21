@@ -238,27 +238,13 @@ const config = {
     error: "/auth/error",
   },
   cookies: {
-    csrfToken: {
-      name: "next-auth.csrf-token",
+    sessionToken: {
+      name: process.env.NODE_ENV === "production" ? "__Secure-next-auth.session-token" : "next-auth.session-token",
       options: {
         httpOnly: true,
         sameSite: "lax",
         path: "/",
         secure: process.env.NODE_ENV === "production"
-      }
-    },
-    sessionToken: {
-      name: `${process.env.NEXTAUTH_URL?.startsWith('https://') ? '__Secure-' : ''}next-auth.session-token`,
-      options: {
-        httpOnly: true,
-        sameSite: "lax",
-        path: "/",
-        secure: process.env.NODE_ENV === "production",
-        domain: process.env.NEXTAUTH_URL ? (
-          process.env.NEXTAUTH_URL.includes('localhost') ? 
-          undefined : // Don't set domain for localhost
-          `.${new URL(process.env.NEXTAUTH_URL).hostname}` // Include dot for subdomain support
-        ) : undefined
       }
     }
   },
