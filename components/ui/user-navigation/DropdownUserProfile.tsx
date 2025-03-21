@@ -53,6 +53,18 @@ export function DropdownUserProfile({
     return null
   }
 
+  const handleSignOut = async () => {
+    try {
+      await signOut({ 
+        callbackUrl: '/auth/login',
+        redirect: true
+      });
+    } catch (error) {
+      console.error("Logout error:", error);
+      // Fallback manual redirect
+      window.location.href = '/auth/login';
+    }
+  };
   return (
     <>
       <DropdownMenu>
@@ -114,7 +126,7 @@ export function DropdownUserProfile({
           <DropdownMenuSeparator />
           <DropdownMenuGroup>
             <DropdownMenuItem>
-              <div className="flex w-full items-center text-red-600 hover:text-red-700 dark:text-red-500 dark:hover:text-red-400" onClick={() => signOut({ callbackUrl: '/auth/login' })}>
+              <div className="flex w-full items-center text-red-600 hover:text-red-700 dark:text-red-500 dark:hover:text-red-400" onClick={handleSignOut}>
                 <RiLogoutBoxLine className="mr-2 h-4 w-4" />
                 Çıkış Yap
               </div>

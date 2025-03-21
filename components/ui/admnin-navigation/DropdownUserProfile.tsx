@@ -49,7 +49,16 @@ export function DropdownUserProfile({
   }
 
   const handleSignOut = async () => {
-    await signOut({ callbackUrl: '/auth/login' });
+    try {
+      await signOut({ 
+        callbackUrl: '/auth/login',
+        redirect: true
+      });
+    } catch (error) {
+      console.error("Logout error:", error);
+      // Fallback manual redirect
+      window.location.href = '/auth/login';
+    }
   };
 
   return (
