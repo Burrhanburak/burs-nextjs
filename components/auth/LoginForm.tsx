@@ -148,6 +148,7 @@ export function LoginForm() {
         email: values.email,
         password: values.password,
         redirect: false,
+        // callbackUrl: callbackUrl || undefined,
       })
 
       if (result?.error) {

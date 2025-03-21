@@ -2,6 +2,7 @@ import { Metadata } from "next"
 import Link from "next/link"
 import { LoginForm } from "@/components/auth/LoginForm"
 import Logo from "@/components/Icon-logo"
+import { Suspense } from "react"
 
 export const metadata: Metadata = {
   title: "Login",
@@ -68,7 +69,9 @@ export default function LoginPage() {
               </p>
             </div>
             
-            <LoginForm />
+            <Suspense fallback={<div className="text-center py-4">Loading...</div>}>
+              <LoginForm />
+            </Suspense>
             
             <div className="mt-8">
               <div className="relative">
