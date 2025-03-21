@@ -4,16 +4,23 @@ import { getToken } from "next-auth/jwt"
 
 // Define protected routes that require authentication
 const protectedRoutes = [
-  "/dashboard",
-  "/profile",
-  "/applications",
-  "/notifications",
-  "/documents",
+  "/user/dashboard",
+  "/user/profile",
+  "/user/applications",
+  "/user/notifications",
+  "/user/scholarships",
+  "/user/documents",
 ]
 
 // Define admin routes
 const adminRoutes = [
   "/admin",
+  "/admin/login",
+  "/admin/dashboard",
+  "/admin/applications",
+  "/admin/interviews",
+  "/admin/notifications",
+  "/admin/documents",
 ]
 
 // Middleware without using auth() to fix the exec() error
@@ -55,13 +62,13 @@ export async function middleware(request: NextRequest) {
 
     // If not admin, redirect to dashboard
     if (session.role !== "ADMIN") {
-      return NextResponse.redirect(new URL("/dashboard", request.url))
+      return NextResponse.redirect(new URL("/user/dashboard", request.url))
     }
   }
 
   // If user is already logged in, redirect from auth pages to dashboard
   if (pathname.startsWith("/auth") && session) {
-    return NextResponse.redirect(new URL("/dashboard", request.url))
+    return NextResponse.redirect(new URL("/user/dashboard", request.url))
   }
 
   return NextResponse.next()

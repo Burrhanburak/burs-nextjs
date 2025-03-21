@@ -17,11 +17,11 @@ import {
 import { UserProfileDesktop, UserProfileMobile } from "./UserProfile"
 
 const navigation = [
-  { name: "Dashboard", href: "/dashboard", icon: RiHome2Line },
-  { name: "Başvurularım", href: "/applications",  icon: RiListCheck },
-  { name: "Evraklarım", href: "/documents", icon: RiFileLine },
-  { name: "Bildirimler", href: "/notifications", icon: RiNotificationLine },
-  { name: "Profilim", href: "/profile",    icon: RiSettings5Line, },
+  { name: "Dashboard", href: "/user/dashboard", icon: RiHome2Line },
+  { name: "Başvurularım", href: "/user/applications",  icon: RiListCheck },
+  { name: "Evraklarım", href: "/user/documents", icon: RiFileLine },
+  { name: "Bildirimler", href: "/user/notifications", icon: RiNotificationLine },
+  { name: "Profilim", href: "/user/profile",    icon: RiSettings5Line, },
 ] as const
 
 export function Sidebar() {
