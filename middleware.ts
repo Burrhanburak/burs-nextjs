@@ -26,11 +26,21 @@ const adminRoutes = [
 export async function middleware(request: NextRequest) {
   const { pathname } = request.nextUrl
 
-  // Get session
-  const session = await getToken({
+  // Get session - with more debug info
+  const token = await getToken({
     req: request,
     secret: process.env.AUTH_SECRET,
+    secureCookie: process.env.NODE_ENV === "production",
+    raw: false, // Attempt to decode the token
   })
+
+  // Convert null to empty object for safety
+  const session = token || {}
+
+  // Debug logs
+  console.log("Middleware path:", pathname)
+  console.log("Token in middleware:", token)
+  console.log("User role in middleware:", token?.role)
 
   // Handle protected routes
   if (protectedRoutes.some(route => pathname.startsWith(route))) {
@@ -53,16 +63,21 @@ export async function middleware(request: NextRequest) {
   // Handle admin routes
   if (adminRoutes.some(route => pathname.startsWith(route))) {
     // If not logged in, redirect to login
-    if (!session) {
+    if (!token) {
+      console.log("No token found, redirecting to login")
       const url = new URL("/auth/login", request.url)
       url.searchParams.set("callbackUrl", pathname)
       return NextResponse.redirect(url)
     }
 
     // If not admin, redirect to dashboard
-    if (session.role !== "ADMIN") {
+    console.log("Checking admin role:", token.role, token.role !== "ADMIN")
+    if (token.role !== "ADMIN") {
+      console.log("Not admin role, actual role:", token.role)
       return NextResponse.redirect(new URL("/user/dashboard", request.url))
     }
+    
+    console.log("Admin access granted for role:", token.role)
   }
 
   // If user is already logged in, redirect from auth pages to dashboard

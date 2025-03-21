@@ -34,6 +34,12 @@ export function LoginForm() {
     setIsLoading(true)
 
     try {
+      // Get URL parameters
+      const params = new URLSearchParams(window.location.search)
+      const callbackUrl = params.get('callbackUrl') || '/user/dashboard'
+      
+      console.log("Callback URL:", callbackUrl)
+      
       const result = await signIn("credentials", {
         email: values.email,
         password: values.password,
@@ -50,15 +56,25 @@ export function LoginForm() {
       const response = await fetch('/api/auth/session')
       const session = await response.json()
       
+      // Debug logs
+      console.log("Session data:", session)
+      console.log("User role:", session?.user?.role)
+      
       // First set loading to false before navigation
       setIsLoading(false)
       
-      
       // Add a small delay before navigation to allow state updates to complete
       setTimeout(() => {
+        console.log("Redirecting based on role:", session?.user?.role)
         if (session?.user?.role === 'ADMIN') {
-          window.location.href = "/admin/dashboard"
+          console.log("Redirecting to admin dashboard")
+          if (callbackUrl.startsWith('/admin')) {
+            window.location.href = callbackUrl
+          } else {
+            window.location.href = "/admin/dashboard"
+          }
         } else {
+          console.log("Redirecting to user dashboard")
           window.location.href = "/user/dashboard"
         }
       }, 100)
