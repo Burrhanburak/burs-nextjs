@@ -1,7 +1,6 @@
 import { NextResponse } from "next/server"
 import { getServerSession } from "next-auth/next"
-import { authOptions } from "@/lib/auth"
-import { PrismaClient } from "@prisma/client"
+import { PrismaClient, ApplicationStatus, UserRole } from "@prisma/client"
 import { sendApplicationStatusEmail } from "@/lib/services/email-service"
 
 const prisma = new PrismaClient()
@@ -9,7 +8,7 @@ const prisma = new PrismaClient()
 export async function POST(request: Request, { params }: { params: { id: string } }) {
   try {
     // Check if user is authenticated and is an admin
-    const session = await getServerSession(authOptions)
+    const session = await getServerSession()
 
     if (!session || session.user.role !== "admin") {
       return NextResponse.json({ error: "Unauthorized" }, { status: 401 })
@@ -53,10 +52,10 @@ export async function POST(request: Request, { params }: { params: { id: string 
     await prisma.scholarshipApplication.update({
       where: { id: interview.applicationId },
       data: {
-        status: result,
-        approvalDate: result === "approved" ? new Date() : null,
-        rejectionDate: result === "rejected" ? new Date() : null,
-        rejectionReason: result === "rejected" ? notes : null,
+        status: result as ApplicationStatus,
+        ...(result === "approved" ? { approvalDate: new Date() } : {}),
+        ...(result === "rejected" ? { rejectionDate: new Date() } : {}),
+        ...(result === "rejected" ? { rejectionReason: notes } : {}),
       },
     })
 
@@ -64,7 +63,9 @@ export async function POST(request: Request, { params }: { params: { id: string 
     if (result === "approved") {
       await prisma.user.update({
         where: { id: interview.userId },
-        data: { status: "active" },
+        data: { 
+          role: "USER" as UserRole 
+        },
       })
     }
 
@@ -82,9 +83,15 @@ export async function POST(request: Request, { params }: { params: { id: string 
       message: `Mülakat sonucu başarıyla kaydedildi ve başvurana bildirim gönderildi.`,
       interview: updatedInterview,
     })
-  } catch (error: any) {
-    console.error("Error recording interview result:", error)
-    return NextResponse.json({ error: error.message || "Bir hata oluştu." }, { status: 500 })
+  } catch (error) {
+    console.error("Error updating interview result:", error);
+    return NextResponse.json(
+      { 
+        error: "Failed to update interview result",
+        details: error instanceof Error ? error.message : "Unknown error" 
+      },
+      { status: 500 }
+    );
   }
 }
 

@@ -153,7 +153,7 @@ export default function ScholarshipApplyPage() {
           <RiCheckLine className="h-4 w-4 text-green-600" />
           <AlertTitle className="text-green-800">Başvuru Yapılmış</AlertTitle>
           <AlertDescription className="text-green-700">
-            Bu burs programına zaten başvuruda bulundunuz. Başvurunuzun durumunu "Burs Başvurularım" sayfasından takip edebilirsiniz.
+            Bu burs programına zaten başvuruda bulundunuz. Başvurunuzun durumunu &ldquo;Burs Başvurularım&rdquo; sayfasından takip edebilirsiniz.
           </AlertDescription>
         </Alert>
         
@@ -167,7 +167,7 @@ export default function ScholarshipApplyPage() {
               <div>
                 <h3 className="font-medium mb-1">Başvuru Detayları</h3>
                 <p className="text-sm text-muted-foreground">
-                  Başvurunuz değerlendirme sürecindedir. Başvurunuzun durumunu "Burs Başvurularım" sayfasından takip edebilirsiniz.
+                  Başvurunuz değerlendirme sürecindedir. Başvurunuzun durumunu &ldquo;Burs Başvurularım&rdquo; sayfasından takip edebilirsiniz.
                 </p>
               </div>
               

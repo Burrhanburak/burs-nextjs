@@ -125,7 +125,7 @@ export default function ManageNotificationsPage() {
             disabled={isLoading}
             variant="destructive"
           >
-            &quot;Ön Değerlendirme&quot; Bildirimini Sil
+            &ldquo;Ön Değerlendirme&rdquo; Bildirimini Sil
           </Button>
           
           <Button 

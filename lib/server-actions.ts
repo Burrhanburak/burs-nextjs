@@ -127,18 +127,13 @@ export async function getBursiyerler() {
       let bolum = "";
       if (sonBasvuru && sonBasvuru.notes) {
         try {
-          // Önce JSON parse etmeyi dene
-          try {
-            const notesData = JSON.parse(sonBasvuru.notes);
-            if (notesData && notesData.department) {
-              bolum = notesData.department;
-            }
-          } catch (_) {
-            // JSON parse edilemediğinde (düz metin olduğunda)
-            console.log("Notes JSON değil, düz metin:", sonBasvuru.notes.substring(0, 30));
+          const notesData = JSON.parse(sonBasvuru.notes);
+          if (notesData && notesData.department) {
+            bolum = notesData.department;
           }
-        } catch (error) {
-          console.log("Notes işleme hatası:", error);
+        } catch {
+          // JSON parse edilemediğinde (düz metin olduğunda)
+          console.log("Notes JSON değil, düz metin:", sonBasvuru.notes.substring(0, 30));
         }
       }
       

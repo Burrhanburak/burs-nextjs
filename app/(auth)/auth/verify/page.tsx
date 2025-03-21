@@ -1,6 +1,6 @@
 "use client"
 
-import { useState, useEffect } from "react"
+import { useState, useEffect, useCallback } from "react"
 import { useRouter, useSearchParams } from "next/navigation"
 import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
@@ -29,18 +29,8 @@ export default function VerifyPage() {
     }
   }, [searchParams])
 
-  // Check for token in the URL
-  useEffect(() => {
-    const token = searchParams.get("token")
-    if (token) {
-      verifyWithToken(token)
-    } else {
-      setTokenChecked(true)
-    }
-  }, [searchParams])
-
   // Verify with token
-  const verifyWithToken = async (token: string) => {
+  const verifyWithToken = useCallback(async (token: string) => {
     setIsVerifying(true)
     setError("")
     
@@ -68,7 +58,17 @@ export default function VerifyPage() {
       setIsVerifying(false)
       setTokenChecked(true)
     }
-  }
+  }, [router]);
+
+  // Check for token in the URL
+  useEffect(() => {
+    const token = searchParams.get("token")
+    if (token) {
+      verifyWithToken(token)
+    } else {
+      setTokenChecked(true)
+    }
+  }, [searchParams, verifyWithToken])
 
   // Verify with code
   const handleVerifyWithCode = async (e: React.FormEvent) => {
@@ -259,7 +259,7 @@ export default function VerifyPage() {
                   <p className="text-white">
                     Size gönderilen doğrulama e-postasını bulamıyor musunuz? 
                     Lütfen spam ve önemsiz klasörlerini kontrol edin veya 
-                    "Tekrar Gönder" butonunu kullanın.
+                    Tekrar Gönder&ldquo; butonunu kullanın.
                   </p>
                 </div>
               </div>

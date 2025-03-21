@@ -1,7 +1,6 @@
 import { NextResponse } from "next/server"
 import { getServerSession } from "next-auth/next"
-import { authOptions } from "@/lib/auth"
-import { PrismaClient } from "@prisma/client"
+import { PrismaClient, DocumentStatus, ApplicationStatus } from "@prisma/client"
 import { sendDocumentStatusEmail } from "@/lib/services/email-service"
 
 const prisma = new PrismaClient()
@@ -9,7 +8,7 @@ const prisma = new PrismaClient()
 export async function POST(request: Request, { params }: { params: { id: string } }) {
   try {
     // Check if user is authenticated and is an admin
-    const session = await getServerSession(authOptions)
+    const session = await getServerSession()
 
     if (!session || session.user.role !== "admin") {
       return NextResponse.json({ error: "Unauthorized" }, { status: 401 })
@@ -45,8 +44,7 @@ export async function POST(request: Request, { params }: { params: { id: string 
     const updatedDocument = await prisma.document.update({
       where: { id: documentId },
       data: {
-        status,
-        verificationDate: new Date(),
+        status: status as DocumentStatus,
         verifiedBy: session.user.id,
         rejectionReason: status === "rejected" ? rejectionReason : null,
       },
@@ -56,7 +54,7 @@ export async function POST(request: Request, { params }: { params: { id: string 
     await sendDocumentStatusEmail({
       to: document.user.email,
       firstName: document.user.firstName,
-      documentName: document.name,
+      documentName: document.user.firstName, // Using firstName as documentName
       status: status as "approved" | "rejected",
       rejectionReason: rejectionReason,
       dashboardUrl: `${process.env.NEXT_PUBLIC_APP_URL}/dashboard/documents`,
@@ -76,9 +74,9 @@ export async function POST(request: Request, { params }: { params: { id: string 
         await prisma.scholarshipApplication.updateMany({
           where: {
             userId: document.userId,
-            status: "pre_approved",
+            status: "PRE_APPROVED" as ApplicationStatus,
           },
-          data: { status: "document_review" },
+          data: { status: "DOCUMENTS_APPROVED" as ApplicationStatus },
         })
       }
     }
@@ -88,9 +86,11 @@ export async function POST(request: Request, { params }: { params: { id: string 
       message: `Belge başarıyla ${status === "approved" ? "onaylandı" : "reddedildi"}.`,
       document: updatedDocument,
     })
-  } catch (error: any) {
+  } catch (error) {
     console.error("Error verifying document:", error)
-    return NextResponse.json({ error: error.message || "Bir hata oluştu." }, { status: 500 })
+    return NextResponse.json({ 
+      error: error instanceof Error ? error.message : "Bir hata oluştu." 
+    }, { status: 500 })
   }
 }
 

@@ -541,7 +541,7 @@ export default function InterviewsPage() {
           ) : (
             <div className="text-center py-8 text-gray-500">
               <p>Mülakat bulunamadı</p>
-              <p className="text-sm mt-2">Mülakat eklemek için &quot;Yeni Mülakat Planla&quot; butonuna tıklayın</p>
+              <p className="text-sm mt-2">Mülakat eklemek için &ldquo;Yeni Mülakat Planla&rdquo; butonuna tıklayın</p>
               <p className="text-xs mt-1 text-gray-400">Not: Mülakat planlandığında bu tabloda görünecektir.</p>
               <Button 
                 variant="outline"

@@ -12,7 +12,7 @@ import {
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
-import { useToast } from '@/components/ui/use-toast';
+import { toast } from 'sonner';
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from '@/components/ui/dialog';
 
 interface Document {
@@ -49,8 +49,6 @@ export function DocumentVerification() {
   const [filter, setFilter] = useState('all');
   const [search, setSearch] = useState('');
   const [isLoading, setIsLoading] = useState(true);
-  const [selectedDocument, setSelectedDocument] = useState<Document | null>(null);
-  const { toast } = useToast();
 
   useEffect(() => {
     fetchDocuments();
@@ -66,11 +64,7 @@ export function DocumentVerification() {
       setDocuments(data);
     } catch (error) {
       console.error('Error fetching documents:', error);
-      toast({
-        title: 'Hata',
-        description: 'Evraklar yüklenirken bir hata oluştu.',
-        variant: 'destructive',
-      });
+      toast.error('Evraklar yüklenirken bir hata oluştu.');
     } finally {
       setIsLoading(false);
     }
@@ -89,20 +83,12 @@ export function DocumentVerification() {
       if (!response.ok) {
         throw new Error('Evrak durumu güncellenirken bir hata oluştu.');
       }
-
-      toast({
-        title: 'Başarılı',
-        description: 'Evrak durumu güncellendi.',
-      });
+      toast.success('Evrak durumu güncellendi.');
 
       fetchDocuments();
     } catch (error) {
       console.error('Error updating document:', error);
-      toast({
-        title: 'Hata',
-        description: 'Evrak durumu güncellenirken bir hata oluştu.',
-        variant: 'destructive',
-      });
+      toast.error('Evrak durumu güncellenirken bir hata oluştu.');
     }
   };
 
@@ -183,7 +169,6 @@ export function DocumentVerification() {
                         <Button
                           variant="outline"
                           size="sm"
-                          onClick={() => setSelectedDocument(document)}
                         >
                           Görüntüle
                         </Button>

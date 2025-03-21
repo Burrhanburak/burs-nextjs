@@ -85,9 +85,10 @@ export default function IncomeStatementPage() {
         // Force a reload of the page to refresh the document list
         router.refresh();
       }, 2000);
-    } catch (error: any) {
+    } catch (error) {
       console.error("Belge kaydetme hatası:", error);
-      toast.error(`Belge kaydedilirken bir hata oluştu: ${error.message || 'Lütfen tekrar deneyin'}`);
+      const errorMessage = error instanceof Error ? error.message : 'Lütfen tekrar deneyin';
+      toast.error(`Belge kaydedilirken bir hata oluştu: ${errorMessage}`);
     } finally {
       setIsUploading(false);
     }
@@ -111,9 +112,10 @@ export default function IncomeStatementPage() {
     
     try {
       await startUpload([selectedFile]);
-    } catch (error: any) {
+    } catch (error) {
       console.error("Yükleme hatası:", error);
-      toast.error(`Yükleme sırasında bir hata oluştu: ${error.message || 'Lütfen tekrar deneyin'}`);
+      const errorMessage = error instanceof Error ? error.message : 'Lütfen tekrar deneyin';
+      toast.error(`Yükleme sırasında bir hata oluştu: ${errorMessage}`);
       setIsUploading(false);
     }
   };

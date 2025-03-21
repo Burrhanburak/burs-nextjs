@@ -21,6 +21,12 @@ interface Scholarship {
   deadline: string
 }
 
+interface ApplicationData {
+  applicationId?: string
+  notes: string
+  customScholarship?: string
+}
+
 export default function CreateApplicationPage() {
   const router = useRouter()
   const [isLoading, setIsLoading] = useState(true)
@@ -155,7 +161,7 @@ export default function CreateApplicationPage() {
       }
       
       // API'ye göre applicationId bekleniyor
-      const applicationData = {
+      const applicationData: ApplicationData = {
         applicationId: selectedScholarship === "custom" ? undefined : selectedScholarship,
         notes: formData.additionalInfo,
       };
@@ -182,7 +188,7 @@ export default function CreateApplicationPage() {
         try {
           const errorJson = JSON.parse(errorText);
           console.error("API hata detayı (JSON):", errorJson);
-        } catch (_) {
+        } catch {
           // JSON'a çevrilemiyorsa raw text olarak bırak
         }
         throw new Error(`Başvuru oluşturulurken bir hata oluştu: ${response.status} ${response.statusText}`);
@@ -315,7 +321,7 @@ export default function CreateApplicationPage() {
                 <h3 className="text-lg font-medium mb-2">Belgeler</h3>
                 <div className="bg-blue-50 text-blue-700 p-4 rounded-md border border-blue-200">
                   <p className="text-sm">
-                    Başvurunuz tamamlandıktan sonra gerekli belgeleri &quot;Evraklarım&quot; sayfasından yükleyebilirsiniz. 
+                    Başvurunuz tamamlandıktan sonra gerekli belgeleri &ldquo;Evraklarım&rdquo; sayfasından yükleyebilirsiniz. 
                     Evrakların zamanında ve eksiksiz yüklenmesi başvurunuzun değerlendirilmesi için önemlidir.
                   </p>
                 </div>
@@ -589,7 +595,7 @@ export default function CreateApplicationPage() {
               <h3 className="text-lg font-medium mb-2">Belgeler</h3>
               <div className="bg-blue-50 text-blue-700 p-4 rounded-md border border-blue-200">
                 <p className="text-sm">
-                  Başvurunuz tamamlandıktan sonra gerekli belgeleri &quot;Evraklarım&quot; sayfasından yükleyebilirsiniz. 
+                  Başvurunuz tamamlandıktan sonra gerekli belgeleri &ldquo;Evraklarım&rdquo; sayfasından yükleyebilirsiniz. 
                   Evrakların zamanında ve eksiksiz yüklenmesi başvurunuzun değerlendirilmesi için önemlidir.
                 </p>
               </div>
