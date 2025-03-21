@@ -1,6 +1,7 @@
 import type { NextAuthConfig } from "next-auth";
 import GoogleProvider from "next-auth/providers/google";
 import { db } from "@/lib/db";
+
 const authConfig: NextAuthConfig = {
   secret: process.env.AUTH_SECRET,
   session: { strategy: "jwt" },
@@ -68,6 +69,21 @@ const authConfig: NextAuthConfig = {
       return session;
     },
     async redirect({ url, baseUrl }) {
+      // Eğer URL'de tekrarlayan callbackUrl parametresi varsa temizle
+      if (url.includes('callbackUrl=') && url.includes('callbackUrl=', url.indexOf('callbackUrl=') + 12)) {
+        // İlk callbackUrl değerini bul
+        const firstCallbackStart = url.indexOf('callbackUrl=');
+        const firstCallbackEnd = url.indexOf('&', firstCallbackStart);
+        const firstCallbackValue = firstCallbackEnd !== -1 
+          ? url.substring(firstCallbackStart, firstCallbackEnd)
+          : url.substring(firstCallbackStart);
+        
+        // Tekrarlayan callbackUrl parametresini temizle
+        const cleanedUrl = url.replace(/callbackUrl=.*callbackUrl=/, firstCallbackValue);
+        return cleanedUrl;
+      }
+      
+      // Normal yönlendirme mantığı
       if (url.startsWith("/")) return `${baseUrl}${url}`;
       else if (new URL(url).origin === baseUrl) return url;
       return baseUrl;
