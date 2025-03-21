@@ -50,7 +50,7 @@ export function DropdownUserProfile({
 
 
   const handleLogout = async () => {
-    await signOut({ callbackUrl: `${window.location.origin}/auth/login` });
+    await signOut({ callbackUrl: 'https://burs-nex.vercel.app/auth/login' });
   };
   return (
     <>
