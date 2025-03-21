@@ -47,6 +47,8 @@ const authConfig: NextAuthConfig = {
         password: { label: "Şifre", type: "password" }
       },
       async authorize(credentials) {
+        console.log("Auth attempt with email:", credentials?.email);
+
         if (!credentials?.email || !credentials?.password) {
           return null;
         }
@@ -56,13 +58,15 @@ const authConfig: NextAuthConfig = {
           const user = await db.user.findUnique({
             where: { email: credentials.email }
           });
-
+          console.log("User found:", user ? "Yes" : "No");
           if (!user || !user.password) {
             return null;
           }
 
           // Şifre doğrulama - bcrypt kullanıyorsanız
           const passwordMatch = await bcrypt.compare(credentials.password, user.password);
+          console.log("Password match:", passwordMatch);
+    
           
           if (!passwordMatch) {
             return null;
