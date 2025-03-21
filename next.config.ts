@@ -1,7 +1,6 @@
 import type { NextConfig } from "next";
 
 const nextConfig: NextConfig = {
-  output: "standalone",
   images: {
     remotePatterns: [
       {
@@ -20,6 +19,18 @@ const nextConfig: NextConfig = {
     // your project has type errors.
     // !! WARN !!
     ignoreBuildErrors: true,
+  },
+  experimental: {
+    serverActions: {
+      bodySizeLimit: '2mb',
+    },
+  },
+  webpack: (config, { isServer }) => {
+    // Fix for building standalone output
+    if (isServer) {
+      config.externals = [...(config.externals || [])];
+    }
+    return config;
   },
 };
 
