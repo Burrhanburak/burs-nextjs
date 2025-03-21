@@ -50,7 +50,7 @@ export function DropdownUserProfile({
 
 
   const handleLogout = async () => {
-    await signOut({ callbackUrl: '/auth/login' });
+    await signOut({ callbackUrl: `${window.location.origin}/auth/login` });
   };
   return (
     <>

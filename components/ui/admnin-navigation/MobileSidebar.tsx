@@ -1,4 +1,4 @@
-import { siteConfig } from "@/app/siteConfig"
+import { AdminSiteConfig } from "@/app/siteConfig"
 import { Button } from "@/components/Button"
 import {
   Drawer,
@@ -10,33 +10,24 @@ import {
   DrawerTrigger,
 } from "@/components/Drawer"
 import { cx, focusRing } from "@/lib/utils"
-import { RiCalendarEventLine, RiDashboard2Line, RiFileTextLine, RiShieldUserLine, RiUserSearchLine } from "@remixicon/react"
+import { RiCalendarEventLine, RiDashboard2Line, RiDashboardLine, RiFileTextLine, RiSettings4Line, RiShieldUserLine, RiUserSearchLine } from "@remixicon/react"
 
 import { BarChartBig, Compass, Menu, Settings2,} from "lucide-react"
 import Link from "next/link"
 import { usePathname } from "next/navigation"
 
 
-const adminNavigation = [
-  { name: "Dashboard", href: "/admin/dashboard", icon: RiDashboard2Line },
-  { name: "Başvurular", href: "/admin/applicants", icon: RiUserSearchLine
 
-   },
-  { name: "Belgeler", href: "/admin/documents", icon: RiFileTextLine },
-  { name: "Mülakatlar", href: "/admin/interviews", icon: RiCalendarEventLine },
-  { name: "Bursiyer Durumu", href: "/admin/bursiyer-status", icon: RiShieldUserLine },
-  // { name: "Raporlar", href: "/admin/reports", icon: RiBarChartBoxLine },
-  { 
-    name: "Ayarlar", 
-    href: "/admin/settings", 
-    Settings2,
-    subItems: [
-      { name: "Kullanıcılar", href: "/admin/settings/users" },
-      { name: "Denetim", href: "/admin/settings/audit" },
-      // { name: "Fatura", href: "/admin/settings/billing" },
-    ]
-  },
+export const adminNavigation = [ 
+  { name: "Dashboard", href: AdminSiteConfig.admin.dashboard, icon: RiDashboardLine },
+  { name: "Başvurular", href: AdminSiteConfig.admin.applicants, icon: RiUserSearchLine },
+  { name: "Belgeler", href: AdminSiteConfig.admin.documents, icon: RiFileTextLine },
+  { name: "Mülakatlar", href: AdminSiteConfig.admin.interviews, icon: RiCalendarEventLine },
+  { name: "Bursiyer Durumu", href: AdminSiteConfig.admin.bursiyerStatus, icon: RiShieldUserLine },
+  { name: "Ayarlar", href: AdminSiteConfig.admin.settings.audit, icon: RiSettings4Line },
 ] as const
+
+
 export default function MobileSidebar() {
   const pathname = usePathname()
   const isActive = (itemHref: string) => {
