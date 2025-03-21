@@ -157,7 +157,12 @@ export async function middleware(request: NextRequest) {
   });
   console.log("Middleware Çalıştı:", { path: pathname, role: token?.role });
 
-  // Eğer /auth sayfalarına gidiliyorsa; oturum varsa uygun dashboarda yönlendir.
+  // Örneğin: Eğer giriş yapılmamışsa login sayfasına yönlendir
+  if (!token) {
+    return NextResponse.redirect(new URL("/auth/login", request.url));
+  }
+  
+
   if (pathname.startsWith("/auth")) {
     if (token) {
       const redirectPath =
