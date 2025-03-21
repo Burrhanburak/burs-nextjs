@@ -1,6 +1,6 @@
 "use client"
 
-import { useState, useEffect } from "react"
+import { useState, useEffect, Suspense } from "react"
 import { useRouter, useSearchParams } from "next/navigation"
 import { Button } from "@/components/ui/button"
 import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from "@/components/ui/card"
@@ -30,7 +30,8 @@ interface RequiredDocument {
   isRequired: boolean
 }
 
-export default function ScholarshipApplyPage() {
+// Component that uses useSearchParams
+function ScholarshipApplyContent() {
   const router = useRouter()
   const searchParams = useSearchParams()
   const scholarshipId = searchParams.get("id")
@@ -286,5 +287,23 @@ export default function ScholarshipApplyPage() {
         </CardContent>
       </Card>
     </div>
+  )
+}
+
+// Main component with Suspense
+export default function ScholarshipApplyPage() {
+  return (
+    <Suspense fallback={
+      <div className="flex h-[400px] items-center justify-center">
+        <div className="text-center">
+          <div className="h-6 w-6 animate-spin rounded-full border-b-2 border-primary mx-auto mb-3"></div>
+          <div className="text-sm text-gray-500 dark:text-gray-400">
+            Yükleniyor...
+          </div>
+        </div>
+      </div>
+    }>
+      <ScholarshipApplyContent />
+    </Suspense>
   )
 } 

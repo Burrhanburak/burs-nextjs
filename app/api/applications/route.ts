@@ -43,7 +43,7 @@ export async function POST(req: Request) {
       return new NextResponse('Application ID or custom scholarship title is required', { status: 400 });
     }
 
-    let applicationData = {
+    const applicationData = {
       userId: user.id,
       status: 'PENDING',
       notes: notes || undefined

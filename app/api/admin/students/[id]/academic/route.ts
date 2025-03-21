@@ -91,11 +91,11 @@ export async function PUT(
       }
     })
     
-  } catch (error) {
-    console.error("Akademik bilgi güncelleme hatası:", error)
+  } catch (err) {
+    console.error("Error updating academic information:", err);
     return NextResponse.json(
-      { error: "Akademik bilgiler güncellenirken bir hata oluştu" },
+      { error: "Akademik bilgiler güncellenirken bir hata oluştu." },
       { status: 500 }
-    )
+    );
   }
 } 

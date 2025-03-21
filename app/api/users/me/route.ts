@@ -86,10 +86,28 @@ export async function PATCH(req: Request) {
       },
     });
 
-    // Parolayı ve hassas bilgileri gizle
-    const { password, ...userWithoutPassword } = updatedUser;
+    // Hassas bilgileri içermeyen kullanıcı verisi oluştur
+    const userResponse = {
+      id: updatedUser.id,
+      firstName: updatedUser.firstName,
+      lastName: updatedUser.lastName,
+      email: updatedUser.email,
+      birthDate: updatedUser.birthDate,
+      profession: updatedUser.profession,
+      mobilePhone: updatedUser.mobilePhone,
+      university: updatedUser.university,
+      department: updatedUser.department,
+      grade: updatedUser.grade,
+      otherScholarship: updatedUser.otherScholarship,
+      otherScholarshipDetails: updatedUser.otherScholarshipDetails,
+      nationality: updatedUser.nationality,
+      image: updatedUser.image,
+      role: updatedUser.role,
+      createdAt: updatedUser.createdAt,
+      updatedAt: updatedUser.updatedAt
+    };
 
-    return NextResponse.json(userWithoutPassword);
+    return NextResponse.json(userResponse);
   } catch (error) {
     console.error('[USER_PATCH]', error);
     return new NextResponse('Internal Error', { status: 500 });

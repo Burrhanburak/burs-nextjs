@@ -9,7 +9,11 @@ export const metadata: Metadata = {
   description: "There was an error during authentication",
 }
 
-export default function AuthErrorPage({ searchParams }: { searchParams: { error?: string } }) {
+export default function AuthErrorPage({
+  searchParams,
+}: {
+  searchParams?: { error?: string };
+}) {
   // Handle different error types
   const error = searchParams?.error || "Unknown error"
   

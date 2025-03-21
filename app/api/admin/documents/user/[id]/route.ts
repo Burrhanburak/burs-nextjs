@@ -43,7 +43,7 @@ export async function GET(
     })
     
     // İki sonucu birleştir ve benzersiz yap
-    let allDocuments = documents
+    const allDocuments = documents
     
     if (scholarshipApplication?.documents) {
       // Mevcut belgeleri ID'ye göre takip et

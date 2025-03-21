@@ -12,19 +12,18 @@ export default function AdminLoginPage() {
   const router = useRouter()
   const searchParams = useSearchParams()
   const callbackUrl = searchParams.get("callbackUrl") || "/admin/dashboard"
-  const [error, setError] = useState<string | null>(null)
   const [isLoading, setIsLoading] = useState(false)
 
   async function onSubmit(event: React.FormEvent<HTMLFormElement>) {
     event.preventDefault()
     setIsLoading(true)
-    setError(null)
 
     const formData = new FormData(event.currentTarget)
     const email = formData.get("email") as string
     const password = formData.get("password") as string
 
     try {
+      // Attempt to sign in with credentials
       const result = await signIn("credentials", {
         email,
         password,
@@ -32,26 +31,25 @@ export default function AdminLoginPage() {
       })
 
       if (result?.error) {
-        setError("Geçersiz email veya şifre")
+        console.log("Invalid credentials")
         return
       }
 
-      // Fetch user session to check role
-      const response = await fetch('/api/auth/session')
-      const session = await response.json()
-      
-      if (session?.user?.role === 'ADMIN') {
+      // Check if the user is an admin
+      const user = await fetch("/api/users/me").then((res) => res.json())
+
+      if (user && user.role === "admin") {
+        // Redirect the admin user to the specified callback URL
         router.push(callbackUrl)
       } else {
-        setError("Bu sayfaya erişim yetkiniz yok. Lütfen admin hesabı ile giriş yapın.")
+        console.log("Access denied. Admin only.")
         // Sign out the non-admin user
         await signIn("credentials", { redirect: false, action: "signout" })
-        return
       }
-      
+
       router.refresh()
-    } catch (error) {
-      setError("Bir hata oluştu. Lütfen tekrar deneyin.")
+    } catch (e) {
+      console.error("An error occurred:", e)
     } finally {
       setIsLoading(false)
     }
@@ -84,11 +82,6 @@ export default function AdminLoginPage() {
                 required
               />
             </div>
-            {error && (
-              <div className="text-sm text-red-500 dark:text-red-400">
-                {error}
-              </div>
-            )}
             <Button
               type="submit"
               className="w-full"

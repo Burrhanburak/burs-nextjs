@@ -1,5 +1,5 @@
 import { NextResponse } from "next/server"
-import { getServerSession } from "next-auth/next"
+import { auth } from "@/lib/auth"
 import { PrismaClient, ApplicationStatus, UserRole } from "@prisma/client"
 import { sendApplicationStatusEmail } from "@/lib/services/email-service"
 
@@ -8,7 +8,7 @@ const prisma = new PrismaClient()
 export async function POST(request: Request, { params }: { params: { id: string } }) {
   try {
     // Check if user is authenticated and is an admin
-    const session = await getServerSession()
+    const session = await auth()
 
     if (!session || session.user.role !== "admin") {
       return NextResponse.json({ error: "Unauthorized" }, { status: 401 })

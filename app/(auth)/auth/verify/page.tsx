@@ -1,6 +1,6 @@
 "use client"
 
-import { useState, useEffect, useCallback } from "react"
+import { useState, useEffect, useCallback, Suspense } from "react"
 import { useRouter, useSearchParams } from "next/navigation"
 import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
@@ -9,7 +9,8 @@ import { CheckCircle2, AlertCircle, Mail, Loader2, AlertTriangle } from "lucide-
 import Link from "next/link"
 import { toast } from "sonner"
 
-export default function VerifyPage() {
+// Component that uses the search params
+function VerifyContent() {
   const router = useRouter()
   const searchParams = useSearchParams()
   
@@ -373,4 +374,21 @@ export default function VerifyPage() {
       </div>
     </div>
   )
+}
+
+// Wrap the component in Suspense
+export default function VerifyPage() {
+  return (
+    <Suspense fallback={
+      <div className="flex justify-center items-center min-h-screen">
+        <div className="text-center">
+          <Loader2 className="h-8 w-8 animate-spin mx-auto mb-4" />
+          <h2 className="text-2xl font-semibold mb-2">Yükleniyor...</h2>
+          <p className="text-muted-foreground">Lütfen bekleyin, sayfa yükleniyor.</p>
+        </div>
+      </div>
+    }>
+      <VerifyContent />
+    </Suspense>
+  );
 } 
