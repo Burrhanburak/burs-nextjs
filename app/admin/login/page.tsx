@@ -38,7 +38,7 @@ export default function AdminLoginPage() {
       // Check if the user is an admin
       const user = await fetch("/api/users/me").then((res) => res.json())
 
-      if (user && user.role === "admin") {
+      if (user && user.role === "ADMIN") {
         // Redirect the admin user to the specified callback URL
         router.push(callbackUrl)
       } else {
