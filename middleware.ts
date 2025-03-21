@@ -22,11 +22,27 @@ const adminRoutes = [
 
 export async function middleware(request: NextRequest) {
   const { pathname } = request.nextUrl  
+  
+  console.log('Request cookies:', request.cookies.getAll().map(c => `${c.name}: [hidden]`));
+  
   // const token = await getToken({ req: request, secret: process.env.AUTH_SECRET })
   const token = await getToken({
     req: request,
     secret: process.env.AUTH_SECRET!,
     secureCookie: process.env.NEXTAUTH_URL?.startsWith("https://"),
+  });
+  
+  // Enhanced debugging for all paths
+  console.log('Full Auth Debug:', { 
+    path: pathname, 
+    env: process.env.NODE_ENV,
+    hasToken: !!token,
+    tokenKeys: token ? Object.keys(token) : null,
+    role: token?.role,
+    email: token?.email,
+    cookieCount: request.cookies.getAll().length,
+    nextauthCookieExists: request.cookies.has('next-auth.session-token') || 
+                          request.cookies.has('__Secure-next-auth.session-token'),
   });
   
   // Add detailed logging for debugging auth issues
