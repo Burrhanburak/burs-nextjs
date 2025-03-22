@@ -33,11 +33,21 @@ export async function middleware(request: NextRequest) {
     return NextResponse.next();
   }
 
+  // Get AUTH_SECRET from environment variables
+  const authSecret = process.env.AUTH_SECRET;
+  if (!authSecret) {
+    console.error("AUTH_SECRET is not defined");
+    return NextResponse.next();
+  }
+
   // Token alınması
   const token = await getToken({
     req: request,
-    secret: process.env.AUTH_SECRET!,
+    secret: authSecret,
     secureCookie: process.env.NEXTAUTH_URL?.startsWith("https://"),
+    cookieName: process.env.NODE_ENV === "production" 
+      ? "__Secure-next-auth.session-token" 
+      : "next-auth.session-token",
   });
   
   // Debug için daha detaylı log
@@ -46,7 +56,8 @@ export async function middleware(request: NextRequest) {
     role: token?.role, 
     isAuthenticated: !!token,
     tokenKeys: token ? Object.keys(token) : null,
-    tokenJSON: token ? JSON.stringify(token) : null
+    tokenJSON: token ? JSON.stringify(token) : null,
+    cookies: request.cookies.getAll().map(c => c.name)
   });
 
   // 1. Auth sayfalarına giriş yapılmışsa, role göre yönlendirme
@@ -74,8 +85,10 @@ export async function middleware(request: NextRequest) {
       tokenStr: JSON.stringify(token)
     });
     
-    if (token.role !== "ADMIN") {
-      console.log(`Admin erişim reddedildi - Rol: ${token.role}`);
+    // Make case-insensitive comparison for role
+    const userRole = String(token.role || "").toUpperCase();
+    if (userRole !== "ADMIN") {
+      console.log(`Admin erişim reddedildi - Rol: ${userRole}`);
       return NextResponse.redirect(new URL("/user/dashboard", request.url));
     }
     

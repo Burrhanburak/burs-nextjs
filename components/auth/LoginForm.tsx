@@ -50,43 +50,18 @@ export function LoginForm() {
     try {
       console.log("About to call signIn with credentials");
       
-      // Include the callbackUrl parameter again to let NextAuth handle the redirect
+      // Use redirect: true to let NextAuth handle the session and redirect
       const result = await signIn("credentials", {
         email: values.email,
         password: values.password,
-        redirect: false,
+        redirect: true, // Changed to true - let NextAuth handle redirects
         callbackUrl: targetCallbackUrl,
       });
       
-      console.log("SignIn result:", result);
+      // This code won't execute if redirect: true since the page will navigate away
+      console.log("SignIn result (should not see this if redirect worked):", result);
       
-      if (result?.error) {
-        console.error("Login error:", result.error);
-        toast.error("Giriş başarısız. Email veya şifre hatalı.");
-        setIsLoading(false);
-        return;
-      }
-      
-      if (result?.ok) {
-        // Success message
-        toast.success("Giriş başarılı! Yönlendiriliyorsunuz...");
-        
-        // Get the final redirect path, preferring the result.url if available
-        const redirectPath = result.url || targetCallbackUrl;
-        console.log("Redirecting to:", redirectPath);
-        
-        // Increase timeout to ensure session is established
-        setTimeout(() => {
-          console.log("Session should be established, navigating to:", redirectPath);
-          
-          // Force a page reload to ensure the session is picked up
-          window.location.href = redirectPath;
-        }, 1500); // Increased from 500ms to 1500ms
-      } else {
-        console.error("Unexpected auth response:", result);
-        toast.error("Beklenmeyen bir hata oluştu");
-        setIsLoading(false);
-      }
+      toast.success("Giriş başarılı! Yönlendiriliyorsunuz...");
     } catch (error) {
       console.error("Login error:", error);
       toast.error("Giriş sırasında bir hata oluştu");
