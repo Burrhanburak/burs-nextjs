@@ -12,7 +12,7 @@ import {
 import { cx, focusInput } from "@/lib/utils"
 import { RiArrowRightSLine, RiExpandUpDownLine, RiLogoutBoxLine, RiUserSettingsLine } from "@remixicon/react"
 import React, { useEffect, useState } from "react"
-import { SignOut } from "@/components/auth/signout-button"
+import { signOut } from "next-auth/react"
 
 interface UserData {
   name?: string;
@@ -71,7 +71,18 @@ export const WorkspacesDropdownDesktop = () => {
   const displayName = userData.name || `${userData.firstName || ''} ${userData.lastName || ''}`.trim();
   const role = userData.role === 'ADMIN' ? 'Yönetici' : 'Bursiyer';
 
-
+  const handleSignOut = async () => {
+    try {
+      await signOut({ 
+        callbackUrl: '/auth/login',
+        redirect: true
+      });
+    } catch (error) {
+      console.error("Logout error:", error);
+      // Fallback manual redirect
+      window.location.href = '/auth/login';
+    }
+  };
 
   return (
     <>
@@ -149,7 +160,7 @@ export const WorkspacesDropdownDesktop = () => {
               Profili Düzenle
             </div>
           </DropdownMenuItem>
-          <DropdownMenuItem onClick={SignOut}>
+          <DropdownMenuItem onClick={handleSignOut}>
             <div className="flex items-center text-red-600">
               <RiLogoutBoxLine className="mr-2 h-4 w-4" />
               Çıkış Yap
