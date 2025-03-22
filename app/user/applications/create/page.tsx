@@ -473,7 +473,7 @@ export default function CreateApplicationPage() {
               </div>
             </CardContent>
             <CardFooter className="flex justify-between">
-              <Link href="/applications">
+              <Link href="/user/applications">
                 <Button variant="outline">İptal</Button>
               </Link>
               <Button 
@@ -747,7 +747,7 @@ export default function CreateApplicationPage() {
             </div>
           </CardContent>
           <CardFooter className="flex justify-between">
-            <Link href="/applications">
+            <Link href="/user/applications">
               <Button variant="outline">İptal</Button>
             </Link>
             <Button 

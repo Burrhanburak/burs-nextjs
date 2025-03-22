@@ -180,7 +180,7 @@ export default function ApplicationDetailPage({ params }: ApplicationDetailProps
         <Separator />
         
         <div className="flex justify-center">
-          <Link href="/applications">
+          <Link href="/user/applications">
             <Button>Başvurularıma Dön</Button>
           </Link>
         </div>
@@ -191,7 +191,7 @@ export default function ApplicationDetailPage({ params }: ApplicationDetailProps
   return (
     <div className="space-y-6">
       <div>
-        <Link href="/applications" className="text-sm text-muted-foreground hover:underline mb-4 inline-block">
+        <Link href="/user/applications" className="text-sm text-muted-foreground hover:underline mb-4 inline-block">
           ← Başvurularıma Dön
         </Link>
         <div className="flex justify-between items-start">

@@ -159,7 +159,7 @@ export default function ManageNotificationsPage() {
           )}
         </CardContent>
         <CardFooter>
-          <Button onClick={() => router.push('/notifications')} variant="outline">
+          <Button onClick={() => router.push('/user/notifications')} variant="outline">
             Bildirimler Sayfasına Dön
           </Button>
         </CardFooter>

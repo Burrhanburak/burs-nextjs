@@ -208,7 +208,7 @@ export default function ScholarshipDetailPage({ params }: ScholarshipDetailProps
             </CardContent>
             <CardFooter className="flex flex-col space-y-2">
               {hasApplied ? (
-                <Link href="/applications" className="w-full">
+                <Link href="/user/applications" className="w-full">
                   <Button className="w-full">
                     Başvurularıma Git
                   </Button>

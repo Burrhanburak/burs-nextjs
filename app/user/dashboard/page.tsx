@@ -205,7 +205,7 @@ export default function DashboardPage() {
       </div>
       
       <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-3">
-        <Link href="/dashboard/applications" className="no-underline">
+        <Link href="/user/applications" className="no-underline">
           <Card className="h-full transition-all hover:bg-accent/50 border-border hover:shadow-md">
             <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-3">
               <CardTitle className="text-sm font-medium">
@@ -224,7 +224,7 @@ export default function DashboardPage() {
           </Card>
         </Link>
         
-        <Link href="/dashboard/documents" className="no-underline">
+        <Link href="/user/documents" className="no-underline">
           <Card className="h-full transition-all hover:bg-accent/50 border-border hover:shadow-md">
             <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-3">
               <CardTitle className="text-sm font-medium">
@@ -243,7 +243,7 @@ export default function DashboardPage() {
           </Card>
         </Link>
         
-        <Link href="/dashboard/notifications" className="no-underline">
+        <Link href="/user/notifications" className="no-underline">
           <Card className="h-full transition-all hover:bg-accent/50 border-border hover:shadow-md">
             <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-3">
               <CardTitle className="text-sm font-medium">
@@ -303,7 +303,7 @@ export default function DashboardPage() {
                 
                 <div className="flex justify-end pt-2">
                   <Link 
-                    href="/dashboard/applications" 
+                    href="/user/applications" 
                     className="inline-flex items-center text-sm font-medium text-primary hover:text-primary/80 hover:underline"
                   >
                     Tüm başvurularımı görüntüle

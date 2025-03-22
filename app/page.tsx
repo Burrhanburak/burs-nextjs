@@ -143,7 +143,7 @@ export default async function HomePage() {
                   Başvurunuzla ilgili tüm gelişmelerden anında haberdar olun ve önemli tarihleri kaçırmayın.
                 </p>
                 <div className="mt-5">
-                  <Link href="/notifications" className="inline-flex items-center text-blue-600 hover:text-blue-700 dark:text-blue-400 dark:hover:text-blue-300 font-medium">
+                  <Link href="/user/notifications" className="inline-flex items-center text-blue-600 hover:text-blue-700 dark:text-blue-400 dark:hover:text-blue-300 font-medium">
                     Daha Fazla Bilgi
                     <ArrowRight className="ml-1 h-4 w-4" />
                   </Link>

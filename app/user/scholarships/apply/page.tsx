@@ -178,7 +178,7 @@ function ScholarshipApplyContent() {
             </div>
           </CardContent>
           <CardFooter>
-            <Link href="/applications">
+            <Link href="/user/applications">
               <Button>Başvurularıma Git</Button>
             </Link>
           </CardFooter>

@@ -6,6 +6,7 @@ import { Separator } from "@/components/ui/separator"
 import { Badge } from "@/components/ui/badge"
 import { Progress } from "@/components/ui/progress"
 import { useEffect, useState } from "react"
+import { useRouter } from "next/navigation"
 import { 
   RiFileListLine, 
   RiCalendarLine, 
@@ -35,7 +36,7 @@ interface Application {
 export default function ApplicationsPage() {
   const [applications, setApplications] = useState<Application[]>([])
   const [isLoading, setIsLoading] = useState(true)
-
+  const router = useRouter()
   useEffect(() => {
     const fetchApplications = async () => {
       try {
@@ -179,7 +180,7 @@ export default function ApplicationsPage() {
           </p>
           <div className="flex gap-3">
            
-            <Link href="/applications/create">
+            <Link href="/user/applications/create">
               <Button>
                 Başvuru Oluştur
               </Button>
@@ -203,8 +204,10 @@ export default function ApplicationsPage() {
       
       <div className="flex flex-wrap items-center justify-between gap-4">
         <Separator className="flex-grow" />
-        <Link href="/applications/create">
-          <Button className="flex items-center whitespace-nowrap">
+        <Link href="/user/applications/create">
+          <Button className="flex items-center whitespace-nowrap" onClick={() => {
+            router.push("/user/applications/create")
+          }}>
             <span className="mr-2">Yeni Başvuru</span>
             <RiArrowRightLine className="h-4 w-4" />
           </Button>
