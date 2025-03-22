@@ -225,6 +225,20 @@ export const WorkspacesDropdownMobile = () => {
   //   await signOut({ callbackUrl: '/auth/login' });
   // };
 
+
+  const handleSignOut = async () => {
+    try {
+      await signOut({ 
+        callbackUrl: '/auth/login',
+        redirect: true
+      });
+    } catch (error) {
+      console.error("Logout error:", error);
+      // Fallback manual redirect
+      window.location.href = '/auth/login';
+    }
+  };
+
   return (
     <>
       {/* sidebar (xs-lg) */}
@@ -302,7 +316,7 @@ export const WorkspacesDropdownMobile = () => {
             Profili Düzenle
           </div>
         </DropdownMenuItem>
-        <DropdownMenuItem onClick={SignOut}>
+        <DropdownMenuItem onClick={handleSignOut}>
           <div className="flex items-center text-red-600">
             <RiLogoutBoxLine className="mr-2 h-4 w-4" />
             Çıkış Yap
