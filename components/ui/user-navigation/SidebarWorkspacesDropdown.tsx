@@ -143,7 +143,7 @@ export const WorkspacesDropdownDesktop = () => {
             </DropdownMenuItem>
           </DropdownMenuGroup>
           <DropdownMenuSeparator />
-          <DropdownMenuItem onClick={() => window.location.href = "/profile"}>
+          <DropdownMenuItem onClick={() => window.location.href = "/user/profile"}>
             <div className="flex items-center">
               <RiUserSettingsLine className="mr-2 h-4 w-4" />
               Profili Düzenle

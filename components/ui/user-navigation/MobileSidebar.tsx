@@ -24,11 +24,11 @@ import Link from "next/link"
 import { usePathname } from "next/navigation"
 
 const navigation = [
-  { name: "Dashboard", href: "/dashboard", icon: RiHome2Line },
-  { name: "Başvurularım", href: "/dashboard/applications", icon: RiFileList3Line },
-  { name: "Belgelerim", href: "/documents", icon: RiFileList3Line },
-  { name: "Bildirimlerim", href: "/dashboard/notifications", icon: RiNotification3Line },
-  { name: "Profilim", href: "/dashboard/profile", icon: RiUser3Line },
+  { name: "Dashboard", href: "/user/dashboard", icon: RiHome2Line },
+  { name: "Başvurularım", href: "/user/applications", icon: RiFileList3Line },
+  { name: "Belgelerim", href: "/user/documents", icon: RiFileList3Line },
+  { name: "Bildirimlerim", href: "/user/notifications", icon: RiNotification3Line },
+  { name: "Profilim", href: "/user/profile", icon: RiUser3Line },
 ] as const
 
 

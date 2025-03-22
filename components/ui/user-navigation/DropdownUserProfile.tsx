@@ -73,7 +73,7 @@ export function DropdownUserProfile({
           <DropdownMenuLabel>{email}</DropdownMenuLabel>
           <DropdownMenuGroup>
           <DropdownMenuItem>
-              <div className="flex w-full items-center" onClick={() => window.location.href = "/profile"}>
+              <div className="flex w-full items-center" onClick={() => window.location.href = "/user/profile"}>
                 <RiUser3Line className="mr-2 h-4 w-4" />
                 Profil
               </div>
