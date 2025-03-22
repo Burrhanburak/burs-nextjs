@@ -9,13 +9,12 @@ import { RiArrowLeftLine, RiUploadCloudLine } from "@remixicon/react"
 import { useUploadThing } from "@/lib/uploadthing"
 import { toast } from "sonner"
 
-export default function ResidenceDocumentPage() {
+export default function IncomeStatementPage() {
   const [isUploaded, setIsUploaded] = useState(false)
   const [uploadedUrl, setUploadedUrl] = useState<string>("")
   const [selectedFile, setSelectedFile] = useState<File | null>(null)
   const [isUploading, setIsUploading] = useState(false)
   const [uploadProgress, setUploadProgress] = useState(0)
-  const [isDragging, setIsDragging] = useState(false)
   const router = useRouter()
   
   // Use UploadThing with documentUploader endpoint
@@ -66,7 +65,7 @@ export default function ResidenceDocumentPage() {
         },
         body: JSON.stringify({
           url: fileUrl,
-          type: 'residence_document' // Belge türünü residence_document olarak ayarladık
+          type: 'income_statement' // Belge türünü income_statement olarak belirle
         }),
       });
       
@@ -76,19 +75,19 @@ export default function ResidenceDocumentPage() {
       }
       
       // Document successfully saved
-      toast.success("İkametgah belgeniz başarıyla yüklendi");
+      toast.success("Gelir belgesi başarıyla yüklendi");
       setUploadedUrl(fileUrl);
       setIsUploaded(true);
       
       // Redirect back to documents page after a brief delay
       setTimeout(() => {
-        router.push("/documents");
+        router.push("/user/documents");
         // Force a reload of the page to refresh the document list
         router.refresh();
       }, 2000);
-    } catch (error: unknown) {
+    } catch (error) {
       console.error("Belge kaydetme hatası:", error);
-      const errorMessage = error instanceof Error ? error.message : 'Lütfen tekrar deneyin.';
+      const errorMessage = error instanceof Error ? error.message : 'Lütfen tekrar deneyin';
       toast.error(`Belge kaydedilirken bir hata oluştu: ${errorMessage}`);
     } finally {
       setIsUploading(false);
@@ -98,51 +97,7 @@ export default function ResidenceDocumentPage() {
   // Handle file selection
   const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     if (e.target.files && e.target.files[0]) {
-      validateAndSetFile(e.target.files[0]);
-    }
-  };
-  
-  // Validate and set file
-  const validateAndSetFile = (file: File) => {
-    // Check file type
-    const allowedTypes = ['.pdf', '.jpg', '.jpeg', '.png'];
-    const fileType = file.name.substring(file.name.lastIndexOf('.')).toLowerCase();
-    
-    if (!allowedTypes.includes(fileType)) {
-      toast.error("Sadece PDF, JPG ve PNG dosyaları kabul edilmektedir.");
-      return false;
-    }
-    
-    // Check file size (4MB = 4 * 1024 * 1024 bytes)
-    if (file.size > 4 * 1024 * 1024) {
-      toast.error("Dosya boyutu 4MB'dan küçük olmalıdır.");
-      return false;
-    }
-    
-    setSelectedFile(file);
-    return true;
-  };
-  
-  // Drag and drop handlers
-  const handleDragOver = (e: React.DragEvent<HTMLDivElement>) => {
-    e.preventDefault();
-    e.stopPropagation();
-    setIsDragging(true);
-  };
-
-  const handleDragLeave = (e: React.DragEvent<HTMLDivElement>) => {
-    e.preventDefault();
-    e.stopPropagation();
-    setIsDragging(false);
-  };
-
-  const handleDrop = (e: React.DragEvent<HTMLDivElement>) => {
-    e.preventDefault();
-    e.stopPropagation();
-    setIsDragging(false);
-    
-    if (e.dataTransfer.files && e.dataTransfer.files.length > 0) {
-      validateAndSetFile(e.dataTransfer.files[0]);
+      setSelectedFile(e.target.files[0]);
     }
   };
   
@@ -156,10 +111,10 @@ export default function ResidenceDocumentPage() {
     setIsUploading(true);
     
     try {
-      await startUpload([selectedFile], {});
-    } catch (error: unknown) {
+      await startUpload([selectedFile]);
+    } catch (error) {
       console.error("Yükleme hatası:", error);
-      const errorMessage = error instanceof Error ? error.message : 'Lütfen tekrar deneyin.';
+      const errorMessage = error instanceof Error ? error.message : 'Lütfen tekrar deneyin';
       toast.error(`Yükleme sırasında bir hata oluştu: ${errorMessage}`);
       setIsUploading(false);
     }
@@ -175,7 +130,7 @@ export default function ResidenceDocumentPage() {
         >
           <RiArrowLeftLine className="h-4 w-4" />
         </Button>
-        <h1 className="text-2xl font-bold">İkametgah Belgesi Yükleme</h1>
+        <h1 className="text-2xl font-bold">Gelir Belgesi Yükleme</h1>
       </div>
       
       <Separator />
@@ -185,12 +140,12 @@ export default function ResidenceDocumentPage() {
           <CardHeader>
             <CardTitle>Yükleme Başarılı</CardTitle>
             <CardDescription>
-              İkametgah belgeniz başarıyla yüklendi
+              Gelir belgesi başarıyla yüklendi
             </CardDescription>
           </CardHeader>
           <CardContent>
             <p className="text-muted-foreground mb-4">
-              İkametgah belgeniz başarıyla yüklendi. Belge incelendikten sonra size bildirim gönderilecektir.
+              Gelir belgeniz başarıyla yüklendi. Belge incelendikten sonra size bildirim gönderilecektir.
             </p>
             {uploadedUrl && (
               <Button 
@@ -208,28 +163,14 @@ export default function ResidenceDocumentPage() {
       ) : (
         <Card>
           <CardHeader>
-            <CardTitle>İkametgah Belgesi Yükleme</CardTitle>
+            <CardTitle>Gelir Belgesi Yükleme</CardTitle>
             <CardDescription>
-              E-Devlet&apos;ten veya belediyeden alacağınız ikametgah belgesini yükleyin
+              Ailenizin veya sizin gelir durumunuzu gösterir belgeyi yükleyin
             </CardDescription>
           </CardHeader>
           <CardContent>
             <div className="space-y-4">
-              <div className={`
-                border-2 border-dashed rounded-lg p-6 flex flex-col items-center justify-center
-                transition-colors duration-200 cursor-pointer
-                ${isDragging 
-                  ? 'border-primary bg-primary/10' 
-                  : selectedFile 
-                    ? 'border-green-500 bg-green-50 dark:bg-green-950/10' 
-                    : 'border-gray-300 dark:border-gray-700 hover:border-gray-400 dark:hover:border-gray-600'
-                }
-              `}
-                onDragOver={handleDragOver}
-                onDragLeave={handleDragLeave}
-                onDrop={handleDrop}
-                onClick={() => document.getElementById('file-upload')?.click()}
-              >
+              <div className="border-2 border-dashed rounded-lg p-6 flex flex-col items-center justify-center">
                 <input
                   type="file"
                   id="file-upload"
@@ -296,10 +237,10 @@ export default function ResidenceDocumentPage() {
       <div className="bg-blue-50 dark:bg-blue-950/10 p-4 rounded-lg border border-blue-100 dark:border-blue-900">
         <h3 className="text-sm font-medium text-blue-800 dark:text-blue-300">Bilgilendirme</h3>
         <ul className="mt-2 text-sm text-blue-700 dark:text-blue-400 space-y-1 list-disc pl-5">
-          <li>İkametgah belgesi E-Devlet&apos;ten veya belediyeden alınmış olmalıdır.</li>
-          <li>Belge güncel olmalıdır (son 3 ay içinde alınmış).</li>
-          <li>Belgedeki tüm bilgilerin okunabilir olduğundan emin olun.</li>
-          <li>Belgenin resmi mühür veya barkod içermesi gerekmektedir.</li>
+          <li>Ailenizin gelir durumunu gösteren resmi belgeleri yükleyiniz.</li>
+          <li>Belgeler son 3 ay içinde alınmış olmalıdır.</li>
+          <li>Maaş bordrosu, emekli maaşı, kira geliri gibi tüm gelir kaynaklarını içermelidir.</li>
+          <li>Belge üzerindeki tüm bilgiler net ve okunaklı olmalıdır.</li>
         </ul>
       </div>
     </div>

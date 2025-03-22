@@ -9,12 +9,13 @@ import { RiArrowLeftLine, RiUploadCloudLine } from "@remixicon/react"
 import { useUploadThing } from "@/lib/uploadthing"
 import { toast } from "sonner"
 
-export default function IdCardPage() {
+export default function ResidenceDocumentPage() {
   const [isUploaded, setIsUploaded] = useState(false)
   const [uploadedUrl, setUploadedUrl] = useState<string>("")
   const [selectedFile, setSelectedFile] = useState<File | null>(null)
   const [isUploading, setIsUploading] = useState(false)
   const [uploadProgress, setUploadProgress] = useState(0)
+  const [isDragging, setIsDragging] = useState(false)
   const router = useRouter()
   
   // Use UploadThing with documentUploader endpoint
@@ -65,7 +66,7 @@ export default function IdCardPage() {
         },
         body: JSON.stringify({
           url: fileUrl,
-          type: 'id_card' // Belge türünü id_card olarak belirle
+          type: 'residence_document' // Belge türünü residence_document olarak ayarladık
         }),
       });
       
@@ -75,7 +76,7 @@ export default function IdCardPage() {
       }
       
       // Document successfully saved
-      toast.success("Kimlik kartı belgeniz başarıyla yüklendi");
+      toast.success("İkametgah belgeniz başarıyla yüklendi");
       setUploadedUrl(fileUrl);
       setIsUploaded(true);
       
@@ -85,9 +86,9 @@ export default function IdCardPage() {
         // Force a reload of the page to refresh the document list
         router.refresh();
       }, 2000);
-    } catch (error) {
+    } catch (error: unknown) {
       console.error("Belge kaydetme hatası:", error);
-      const errorMessage = error instanceof Error ? error.message : 'Lütfen tekrar deneyin';
+      const errorMessage = error instanceof Error ? error.message : 'Lütfen tekrar deneyin.';
       toast.error(`Belge kaydedilirken bir hata oluştu: ${errorMessage}`);
     } finally {
       setIsUploading(false);
@@ -97,7 +98,51 @@ export default function IdCardPage() {
   // Handle file selection
   const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     if (e.target.files && e.target.files[0]) {
-      setSelectedFile(e.target.files[0]);
+      validateAndSetFile(e.target.files[0]);
+    }
+  };
+  
+  // Validate and set file
+  const validateAndSetFile = (file: File) => {
+    // Check file type
+    const allowedTypes = ['.pdf', '.jpg', '.jpeg', '.png'];
+    const fileType = file.name.substring(file.name.lastIndexOf('.')).toLowerCase();
+    
+    if (!allowedTypes.includes(fileType)) {
+      toast.error("Sadece PDF, JPG ve PNG dosyaları kabul edilmektedir.");
+      return false;
+    }
+    
+    // Check file size (4MB = 4 * 1024 * 1024 bytes)
+    if (file.size > 4 * 1024 * 1024) {
+      toast.error("Dosya boyutu 4MB'dan küçük olmalıdır.");
+      return false;
+    }
+    
+    setSelectedFile(file);
+    return true;
+  };
+  
+  // Drag and drop handlers
+  const handleDragOver = (e: React.DragEvent<HTMLDivElement>) => {
+    e.preventDefault();
+    e.stopPropagation();
+    setIsDragging(true);
+  };
+
+  const handleDragLeave = (e: React.DragEvent<HTMLDivElement>) => {
+    e.preventDefault();
+    e.stopPropagation();
+    setIsDragging(false);
+  };
+
+  const handleDrop = (e: React.DragEvent<HTMLDivElement>) => {
+    e.preventDefault();
+    e.stopPropagation();
+    setIsDragging(false);
+    
+    if (e.dataTransfer.files && e.dataTransfer.files.length > 0) {
+      validateAndSetFile(e.dataTransfer.files[0]);
     }
   };
   
@@ -112,9 +157,9 @@ export default function IdCardPage() {
     
     try {
       await startUpload([selectedFile], {});
-    } catch (error) {
+    } catch (error: unknown) {
       console.error("Yükleme hatası:", error);
-      const errorMessage = error instanceof Error ? error.message : 'Lütfen tekrar deneyin';
+      const errorMessage = error instanceof Error ? error.message : 'Lütfen tekrar deneyin.';
       toast.error(`Yükleme sırasında bir hata oluştu: ${errorMessage}`);
       setIsUploading(false);
     }
@@ -130,7 +175,7 @@ export default function IdCardPage() {
         >
           <RiArrowLeftLine className="h-4 w-4" />
         </Button>
-        <h1 className="text-2xl font-bold">Kimlik Kartı Yükleme</h1>
+        <h1 className="text-2xl font-bold">İkametgah Belgesi Yükleme</h1>
       </div>
       
       <Separator />
@@ -140,12 +185,12 @@ export default function IdCardPage() {
           <CardHeader>
             <CardTitle>Yükleme Başarılı</CardTitle>
             <CardDescription>
-              Kimlik kartı belgeniz başarıyla yüklendi
+              İkametgah belgeniz başarıyla yüklendi
             </CardDescription>
           </CardHeader>
           <CardContent>
             <p className="text-muted-foreground mb-4">
-              Kimlik kartı belgeniz başarıyla yüklendi. Belge incelendikten sonra size bildirim gönderilecektir.
+              İkametgah belgeniz başarıyla yüklendi. Belge incelendikten sonra size bildirim gönderilecektir.
             </p>
             {uploadedUrl && (
               <Button 
@@ -163,14 +208,28 @@ export default function IdCardPage() {
       ) : (
         <Card>
           <CardHeader>
-            <CardTitle>Kimlik Kartı Yükleme</CardTitle>
+            <CardTitle>İkametgah Belgesi Yükleme</CardTitle>
             <CardDescription>
-              Kimlik kartı belgenizi yükleyin
+              E-Devlet&apos;ten veya belediyeden alacağınız ikametgah belgesini yükleyin
             </CardDescription>
           </CardHeader>
           <CardContent>
             <div className="space-y-4">
-              <div className="border-2 border-dashed rounded-lg p-6 flex flex-col items-center justify-center">
+              <div className={`
+                border-2 border-dashed rounded-lg p-6 flex flex-col items-center justify-center
+                transition-colors duration-200 cursor-pointer
+                ${isDragging 
+                  ? 'border-primary bg-primary/10' 
+                  : selectedFile 
+                    ? 'border-green-500 bg-green-50 dark:bg-green-950/10' 
+                    : 'border-gray-300 dark:border-gray-700 hover:border-gray-400 dark:hover:border-gray-600'
+                }
+              `}
+                onDragOver={handleDragOver}
+                onDragLeave={handleDragLeave}
+                onDrop={handleDrop}
+                onClick={() => document.getElementById('file-upload')?.click()}
+              >
                 <input
                   type="file"
                   id="file-upload"
@@ -237,10 +296,10 @@ export default function IdCardPage() {
       <div className="bg-blue-50 dark:bg-blue-950/10 p-4 rounded-lg border border-blue-100 dark:border-blue-900">
         <h3 className="text-sm font-medium text-blue-800 dark:text-blue-300">Bilgilendirme</h3>
         <ul className="mt-2 text-sm text-blue-700 dark:text-blue-400 space-y-1 list-disc pl-5">
-          <li>Kimlik kartı önlü ve arkalı olacak şekilde yüklenmelidir.</li>
-          <li>Kimlik üzerindeki tüm bilgiler net ve okunaklı olmalıdır.</li>
-          <li>Kimliğinizin güncel ve geçerlilik süresi dolmamış olduğundan emin olun.</li>
-          <li>T.C. kimlik numaranız belgede açıkça görünmelidir.</li>
+          <li>İkametgah belgesi E-Devlet&apos;ten veya belediyeden alınmış olmalıdır.</li>
+          <li>Belge güncel olmalıdır (son 3 ay içinde alınmış).</li>
+          <li>Belgedeki tüm bilgilerin okunabilir olduğundan emin olun.</li>
+          <li>Belgenin resmi mühür veya barkod içermesi gerekmektedir.</li>
         </ul>
       </div>
     </div>

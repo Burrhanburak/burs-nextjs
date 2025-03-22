@@ -160,11 +160,11 @@ export default function DocumentsPage() {
 
   // Create a list of standard document types
   const standardDocumentTypes = [
-    { id: 'student_certificate', name: 'Öğrenci Belgesi', description: 'Üniversiteden veya E-Devlet\'ten alınmış güncel öğrenci belgesi' },
+    { id: 'student-certificate', name: 'Öğrenci Belgesi', description: 'Üniversiteden veya E-Devlet\'ten alınmış güncel öğrenci belgesi' },
     { id: 'transcript', name: 'Transkript', description: 'Akademik not dökümü belgesi' },
-    { id: 'id_card', name: 'Kimlik Kartı', description: 'Kimlik kartı veya pasaport' },
-    { id: 'income_statement', name: 'Gelir Belgesi', description: 'Aile gelir durumunu gösteren belge' },
-    { id: 'residence_document', name: 'İkametgah Belgesi', description: 'İkametgah ilmühaberi' }
+    { id: 'id-card', name: 'Kimlik Kartı', description: 'Kimlik kartı veya pasaport' },
+    { id: 'income-statement', name: 'Gelir Belgesi', description: 'Aile gelir durumunu gösteren belge' },
+    { id: 'residence-document', name: 'İkametgah Belgesi', description: 'İkametgah ilmühaberi' }
   ];
   
   // Group documents by type
@@ -328,7 +328,7 @@ export default function DocumentsPage() {
                       )}
                       
                       {(document.status === "REJECTED" || document.status === "NOT_SUBMITTED") && (
-                        <Link href={`/user/documents/${document.type}`}>
+                        <Link href={`/user/documents/${document.type.replace(/_/g, '-')}`}>
                           <Button 
                             variant="default" 
                             size="sm"

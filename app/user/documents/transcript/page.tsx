@@ -81,7 +81,7 @@ export default function TranscriptPage() {
       
       // Redirect back to documents page after a brief delay
       setTimeout(() => {
-        router.push("/documents");
+        router.push("/user/documents");
         // Force a reload of the page to refresh the document list
         router.refresh();
       }, 2000);
@@ -111,7 +111,7 @@ export default function TranscriptPage() {
     setIsUploading(true);
     
     try {
-      await startUpload([selectedFile]);
+      await startUpload([selectedFile], {});
     } catch (error) {
       console.error("Yükleme hatası:", error);
       const errorMessage = error instanceof Error ? error.message : 'Lütfen tekrar deneyin';

@@ -218,7 +218,7 @@ export default function ApplicationsPage() {
       
       <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-3">
         {applications.map((application) => (
-          <Link href={`/applications/${application.id}`} key={application.id}>
+          <Link href={`/user/applications/${application.id}`} key={application.id}>
             <Card className="h-full transition-all hover:shadow-md">
               <CardHeader className="pb-2">
                 <div className="flex justify-between">

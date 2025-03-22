@@ -254,7 +254,7 @@ export default function ApplicationDetailPage({ params }: ApplicationDetailProps
             <CardHeader className="pb-2">
               <div className="flex justify-between items-center">
                 <CardTitle>Gerekli Belgeler</CardTitle>
-                <Link href={`/applications/${id}/documents`}>
+                <Link href={`/user/applications/${id}/documents`}>
                   <Button variant="outline" size="sm" className="flex items-center">
                     <RiUploadCloud2Line className="mr-1 h-4 w-4" />
                     Belge Yükle
@@ -435,7 +435,7 @@ export default function ApplicationDetailPage({ params }: ApplicationDetailProps
               </div>
               
               {(application.status === "DOCUMENT_REQUIRED" || application.status === "DOCUMENTS_SUBMITTED" || application.status === "DOCUMENTS_REJECTED") && (
-                <Link href={`/applications/${id}/documents`} className="w-full">
+                <Link href={`/user/applications/${id}/documents`} className="w-full">
                   <Button className="w-full">
                     Belge Yükle
                   </Button>

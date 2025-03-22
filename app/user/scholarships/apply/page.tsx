@@ -100,7 +100,7 @@ function ScholarshipApplyContent() {
       const data = await response.json()
       toast.success("Başvurunuz başarıyla oluşturuldu")
       // Redirect to application detail page
-      router.push(`/applications/${data.id}`)
+      router.push(`/user/applications/${data.id}`)
     } catch (error) {
       console.error("Başvuru oluşturma hatası:", error)
       toast.error("Başvurunuz oluşturulurken bir hata oluştu")

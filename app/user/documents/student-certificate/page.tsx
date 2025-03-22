@@ -20,7 +20,7 @@ export default function StudentCertificatePage() {
     
     // Redirect back to documents page after a brief delay
     setTimeout(() => {
-      router.push("/documents")
+      router.push("/user/documents")
       // Force a reload of the page to refresh the document list
       router.refresh()
     }, 2000)
