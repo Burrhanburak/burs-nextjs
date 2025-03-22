@@ -28,7 +28,8 @@ export async function middleware(request: NextRequest) {
       pathname.includes('.png') || 
       pathname.includes('.jpg') || 
       pathname.includes('.css') || 
-      pathname.includes('.js')) {
+      pathname.includes('.js') ||
+      pathname.includes('favicon.ico')) {
     return NextResponse.next();
   }
 
@@ -44,14 +45,15 @@ export async function middleware(request: NextRequest) {
     path: pathname, 
     role: token?.role, 
     isAuthenticated: !!token,
-    tokenKeys: token ? Object.keys(token) : null
+    tokenKeys: token ? Object.keys(token) : null,
+    tokenJSON: token ? JSON.stringify(token) : null
   });
 
   // 1. Auth sayfalarına giriş yapılmışsa, role göre yönlendirme
   if (pathname.startsWith("/auth")) {
     if (token) {
       const redirectPath = token.role === "ADMIN" ? "/admin/dashboard" : "/user/dashboard";
-      console.log(`Auth sayfasından yönlendirme: ${redirectPath}`);
+      console.log(`Auth sayfasından yönlendirme: ${redirectPath}, token:`, JSON.stringify(token));
       return NextResponse.redirect(new URL(redirectPath, request.url));
     }
     return NextResponse.next();
@@ -65,10 +67,18 @@ export async function middleware(request: NextRequest) {
       loginUrl.searchParams.set("callbackUrl", pathname);
       return NextResponse.redirect(loginUrl);
     }
+    
+    console.log("Admin token check:", { 
+      role: token.role, 
+      isAdmin: token.role === "ADMIN",
+      tokenStr: JSON.stringify(token)
+    });
+    
     if (token.role !== "ADMIN") {
       console.log(`Admin erişim reddedildi - Rol: ${token.role}`);
       return NextResponse.redirect(new URL("/user/dashboard", request.url));
     }
+    
     console.log("Admin erişimi onaylandı");
     return NextResponse.next();
   }
@@ -85,7 +95,16 @@ export async function middleware(request: NextRequest) {
     return NextResponse.next();
   }
 
-  // 4. Diğer tüm rotalar
+  // 4. Ana sayfa yönlendirmesi - giriş yapıldıysa rolüne göre dashboard'a yönlendir
+  if (pathname === "/") {
+    if (token) {
+      const redirectPath = token.role === "ADMIN" ? "/admin/dashboard" : "/user/dashboard";
+      console.log(`Ana sayfadan yönlendirme: ${redirectPath}`);
+      return NextResponse.redirect(new URL(redirectPath, request.url));
+    }
+  }
+
+  // 5. Diğer tüm rotalar
   return NextResponse.next();
 }
 

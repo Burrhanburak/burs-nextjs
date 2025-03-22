@@ -65,9 +65,20 @@ export function LoginForm() {
         toast.success("Giriş başarılı! Yönlendiriliyorsunuz...");
         console.log("Login successful, redirecting to:", result.url);
         
+        // We can try to detect if this is an admin login by checking the email
+        // This is a simple heuristic - the middleware will handle actual permissions
+        const isAdminEmail = values.email.includes("admin") || values.email === "admin@example.com";
+        
+        // If this might be an admin, modify redirect to admin dashboard
+        const redirectUrl = isAdminEmail && !callbackUrl 
+          ? result.url.replace("/user/dashboard", "/admin/dashboard") 
+          : result.url;
+          
+        console.log("Final redirect URL:", redirectUrl);
+        
         // Short delay to show success message
         setTimeout(() => {
-          window.location.href = result.url!; // Add non-null assertion since we've already checked result.url exists
+          window.location.href = redirectUrl;
         }, 500);
       } else {
         // Handle unexpected response

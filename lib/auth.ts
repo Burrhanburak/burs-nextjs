@@ -260,6 +260,71 @@
 
 import NextAuth from "next-auth";
 import authConfig from "@/auth.config";
+import { db } from "@/lib/db";
 
 export const { handlers, auth, signIn, signOut } = NextAuth(authConfig);
 export const authConfigExport = authConfig;
+
+// Utility functions for authorization
+export async function isAdmin(userId: string) {
+  const user = await db.user.findFirst({
+    where: { 
+      id: userId,
+      role: "ADMIN"
+    },
+  });
+
+  return !!user;
+}
+
+export async function getUserById(userId: string) {
+  const user = await db.user.findUnique({
+    where: { id: userId },
+  });
+
+  return user;
+}
+
+export async function getAdminById(userId: string) {
+  const admin = await db.user.findFirst({
+    where: { 
+      id: userId,
+      role: "ADMIN"
+    },
+  });
+
+  return admin;
+}
+
+export async function hasApplicationAccess(userId: string, applicationId: string) {
+  const application = await db.scholarshipApplication.findFirst({
+    where: {
+      id: applicationId,
+      userId,
+    },
+  });
+
+  return !!application;
+}
+
+export async function hasDocumentAccess(userId: string, documentId: string) {
+  const document = await db.document.findFirst({
+    where: {
+      id: documentId,
+      userId,
+    },
+  });
+
+  return !!document;
+}
+
+export async function hasInterviewAccess(userId: string, interviewId: string) {
+  const interview = await db.scholarshipApplication.findFirst({
+    where: {
+      id: interviewId,
+      userId,
+    },
+  });
+
+  return !!interview;
+}
