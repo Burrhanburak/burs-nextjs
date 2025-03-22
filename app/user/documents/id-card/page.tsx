@@ -65,7 +65,7 @@ export default function IdCardPage() {
         },
         body: JSON.stringify({
           url: fileUrl,
-          type: 'id_card' // Belge türünü id_card olarak belirle
+          type: 'id-card' // Belge türünü id-card olarak belirle
         }),
       });
       

@@ -7,7 +7,7 @@ export default function DashboardRedirect() {
   const router = useRouter()
   
   useEffect(() => {
-    router.push("/dashboard")
+    router.push("/user/dashboard")
   }, [router])
   
   return null

@@ -114,9 +114,13 @@ export default function DocumentsPage() {
     const nameMap: {[key: string]: string} = {
       'transcript': 'Transkript',
       'id_card': 'Kimlik Kartı',
+      'id-card': 'Kimlik Kartı',
       'income_statement': 'Gelir Belgesi',
+      'income-statement': 'Gelir Belgesi',
       'student_certificate': 'Öğrenci Belgesi',
-      'residence_document': 'İkametgah Belgesi'
+      'student-certificate': 'Öğrenci Belgesi',
+      'residence_document': 'İkametgah Belgesi',
+      'residence-document': 'İkametgah Belgesi'
     }
     
     return nameMap[type] || type
@@ -176,10 +180,22 @@ export default function DocumentsPage() {
       grouped[type.id] = null;
     });
     
+    // Map to convert snake_case to kebab-case
+    const typeMap: Record<string, string> = {
+      'student_certificate': 'student-certificate',
+      'id_card': 'id-card',
+      'income_statement': 'income-statement',
+      'residence_document': 'residence-document',
+    };
+    
     // Add uploaded documents
     docs.forEach(doc => {
-      if (doc.type in grouped) {
-        grouped[doc.type] = doc;
+      // Check if we need to normalize the type (from snake_case to kebab-case)
+      const normalizedType = typeMap[doc.type] || doc.type;
+      
+      // Add to appropriate group
+      if (normalizedType in grouped) {
+        grouped[normalizedType] = doc;
       }
     });
     

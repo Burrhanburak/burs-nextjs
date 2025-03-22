@@ -3,6 +3,15 @@ import { getCurrentUser } from "@/lib/session"
 import { db } from "@/lib/db"
 import { DocumentStatus } from "@prisma/client"
 
+// Helper function to convert kebab-case to snake_case for document types
+function normalizeDocumentType(type: string): string {
+  // If it's already snake_case, return as is
+  if (type.includes('_')) return type;
+  
+  // Convert kebab-case to snake_case
+  return type.replace(/-/g, '_');
+}
+
 // GET /api/documents - Get all documents for the current user
 export async function GET() {
   try {
@@ -48,10 +57,13 @@ export async function POST(req: Request) {
       return new NextResponse("URL and type are required", { status: 400 })
     }
 
+    // Normalize document type to ensure consistent storage format
+    const normalizedType = normalizeDocumentType(type);
+
     const document = await db.document.create({
       data: {
         url,
-        type,
+        type: normalizedType,
         userId: user.id,
         scholarshipApplicationId,
         status: DocumentStatus.PENDING,
