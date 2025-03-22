@@ -8,7 +8,7 @@ import { toast } from "sonner";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useForm } from "react-hook-form";
 import { z } from "zod";
-import { useSearchParams } from "next/navigation";
+import { useSearchParams, useRouter } from "next/navigation";
 import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from "@/components/ui/form";
 
 const formSchema = z.object({
@@ -23,6 +23,7 @@ const formSchema = z.object({
 export function LoginForm() {
   const [isLoading, setIsLoading] = useState(false);
   const searchParams = useSearchParams();
+  const router = useRouter();
   const callbackUrl = searchParams.get("callbackUrl") || "";
   
   const form = useForm<z.infer<typeof formSchema>>({
@@ -48,7 +49,6 @@ export function LoginForm() {
         email: values.email,
         password: values.password,
         redirect: false, // Keep as false to handle redirects programmatically
-        callbackUrl: callbackUrl || "/user/dashboard",
       });
       
       console.log("SignIn result:", result);
@@ -60,25 +60,27 @@ export function LoginForm() {
         return;
       }
       
-      if (result?.url) {
-        // Success message before redirect
+      if (result?.ok) {
+        // Success message
         toast.success("Giriş başarılı! Yönlendiriliyorsunuz...");
-        console.log("Login successful, redirecting to:", result.url);
         
         // We can try to detect if this is an admin login by checking the email
-        // This is a simple heuristic - the middleware will handle actual permissions
         const isAdminEmail = values.email.includes("admin") || values.email === "admin@example.com";
         
-        // If this might be an admin, modify redirect to admin dashboard
-        const redirectUrl = isAdminEmail && !callbackUrl 
-          ? result.url.replace("/user/dashboard", "/admin/dashboard") 
-          : result.url;
-          
-        console.log("Final redirect URL:", redirectUrl);
+        // Determine where to redirect based on callbackUrl or user role
+        let redirectPath;
+        if (callbackUrl) {
+          redirectPath = callbackUrl;
+        } else {
+          redirectPath = isAdminEmail ? "/admin/dashboard" : "/user/dashboard";
+        }
         
-        // Short delay to show success message
+        console.log("Redirecting to:", redirectPath);
+        
+        // Use router.push for client-side navigation
+        // This preserves the authentication context
         setTimeout(() => {
-          window.location.href = redirectUrl;
+          router.push(redirectPath);
         }, 500);
       } else {
         // Handle unexpected response

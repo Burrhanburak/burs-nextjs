@@ -5,6 +5,7 @@ import { db } from "@/lib/db";
 import bcrypt from "bcrypt"; // Şifre karşılaştırması için
 
 const authConfig: NextAuthConfig = {
+  debug: process.env.NODE_ENV === "development",
   secret: process.env.AUTH_SECRET,
   session: { strategy: "jwt" },
   pages: {
@@ -147,6 +148,11 @@ const authConfig: NextAuthConfig = {
       // Debugging
       console.log("Redirect callback:", { url, baseUrl });
       
+      // Check for admin paths and ensure token is preserved
+      if (url.includes('/admin')) {
+        console.log("Admin redirect detected:", url);
+      }
+      
       // Eğer URL'de tekrarlayan callbackUrl parametresi varsa temizle
       if (url.includes('callbackUrl=') && url.includes('callbackUrl=', url.indexOf('callbackUrl=') + 12)) {
         // İlk callbackUrl değerini bul
@@ -178,7 +184,8 @@ const authConfig: NextAuthConfig = {
       
       return baseUrl;
     },
-    async signIn() {
+    async signIn({ user }) {
+      console.log("Sign in callback - user:", JSON.stringify(user));
       return true;
     },
   },
