@@ -328,7 +328,7 @@ export default function DocumentsPage() {
                       )}
                       
                       {(document.status === "REJECTED" || document.status === "NOT_SUBMITTED") && (
-                        <Link href={`/documents/${document.type}`}>
+                        <Link href={`/user/documents/${document.type}`}>
                           <Button 
                             variant="default" 
                             size="sm"
