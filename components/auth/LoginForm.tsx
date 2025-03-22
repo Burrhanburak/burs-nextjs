@@ -47,22 +47,28 @@ export function LoginForm() {
       const result = await signIn("credentials", {
         email: values.email,
         password: values.password,
-        redirect: false, // Change to false to see the response
+        redirect: false, // Keep as false to handle redirects programmatically
         callbackUrl: callbackUrl || "/user/dashboard",
       });
       
       console.log("SignIn result:", result);
       
       if (result?.error) {
-        toast.error(`Login failed: ${result.error}`);
+        console.error("Login error:", result.error);
+        toast.error("Giriş başarısız. Email veya şifre hatalı.");
         setIsLoading(false);
         return;
       }
       
       if (result?.url) {
-        // Successful login with redirect URL
-        console.log("Redirecting to:", result.url);
-        window.location.href = result.url;
+        // Success message before redirect
+        toast.success("Giriş başarılı! Yönlendiriliyorsunuz...");
+        console.log("Login successful, redirecting to:", result.url);
+        
+        // Short delay to show success message
+        setTimeout(() => {
+          window.location.href = result.url!; // Add non-null assertion since we've already checked result.url exists
+        }, 500);
       } else {
         // Handle unexpected response
         console.error("Unexpected auth response:", result);

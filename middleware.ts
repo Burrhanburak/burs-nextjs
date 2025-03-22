@@ -23,6 +23,15 @@ const adminRoutes = [
 export async function middleware(request: NextRequest) {
   const { pathname } = request.nextUrl;
 
+  // Static resource paths - skip middleware processing
+  if (pathname.includes('.svg') || 
+      pathname.includes('.png') || 
+      pathname.includes('.jpg') || 
+      pathname.includes('.css') || 
+      pathname.includes('.js')) {
+    return NextResponse.next();
+  }
+
   // Token alınması
   const token = await getToken({
     req: request,
@@ -30,13 +39,19 @@ export async function middleware(request: NextRequest) {
     secureCookie: process.env.NEXTAUTH_URL?.startsWith("https://"),
   });
   
-  // Sadece debug için
-  console.log("Middleware Çalıştı:", { path: pathname, role: token?.role });
+  // Debug için daha detaylı log
+  console.log("Middleware Çalıştı:", { 
+    path: pathname, 
+    role: token?.role, 
+    isAuthenticated: !!token,
+    tokenKeys: token ? Object.keys(token) : null
+  });
 
   // 1. Auth sayfalarına giriş yapılmışsa, role göre yönlendirme
   if (pathname.startsWith("/auth")) {
     if (token) {
       const redirectPath = token.role === "ADMIN" ? "/admin/dashboard" : "/user/dashboard";
+      console.log(`Auth sayfasından yönlendirme: ${redirectPath}`);
       return NextResponse.redirect(new URL(redirectPath, request.url));
     }
     return NextResponse.next();
@@ -45,24 +60,28 @@ export async function middleware(request: NextRequest) {
   // 2. Admin rotaları için kontrol
   if (adminRoutes.some((route) => pathname.startsWith(route))) {
     if (!token) {
+      console.log("Admin erişimi için oturum açılmamış");
       const loginUrl = new URL("/auth/login", request.url);
       loginUrl.searchParams.set("callbackUrl", pathname);
       return NextResponse.redirect(loginUrl);
     }
     if (token.role !== "ADMIN") {
-      console.log("Admin erişim reddedildi - Rol:", token.role);
+      console.log(`Admin erişim reddedildi - Rol: ${token.role}`);
       return NextResponse.redirect(new URL("/user/dashboard", request.url));
     }
+    console.log("Admin erişimi onaylandı");
     return NextResponse.next();
   }
 
   // 3. Kullanıcı rotaları için kontrol
   if (protectedRoutes.some((route) => pathname.startsWith(route))) {
     if (!token) {
+      console.log("Kullanıcı erişimi için oturum açılmamış");
       const loginUrl = new URL("/auth/login", request.url);
       loginUrl.searchParams.set("callbackUrl", pathname);
       return NextResponse.redirect(loginUrl);
     }
+    console.log(`Kullanıcı erişimi onaylandı - Rol: ${token.role}`);
     return NextResponse.next();
   }
 

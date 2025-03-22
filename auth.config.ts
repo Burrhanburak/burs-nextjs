@@ -36,7 +36,7 @@ const authConfig: NextAuthConfig = {
           name: profile.name,
           email: profile.email,
           image: profile.picture,
-          role: "user", // This sets default role to "user"
+          role: "USER", // Default role as "USER" (not "user" - consistency with DB)
         };
       },
     }),
@@ -74,11 +74,15 @@ const authConfig: NextAuthConfig = {
             return null;
           }
 
+          // Ensure default role if none exists
+          const userRole = user.role || "USER";
+          console.log(`User authenticated with role: ${userRole}`);
+
           return {
             id: user.id,
             name: `${user.firstName || ''} ${user.lastName || ''}`.trim(),
             email: user.email,
-            role: user.role,
+            role: userRole,
             image: user.image || null
           };
         } catch (error) {
@@ -90,29 +94,52 @@ const authConfig: NextAuthConfig = {
   ],
   callbacks: {
     async jwt({ token, user }) {
+      console.log("JWT callback - incoming token:", JSON.stringify(token));
+      console.log("JWT callback - user data:", user ? JSON.stringify(user) : "No user data");
+      
       if (user) {
+        // Initial sign in - set all properties from user object
         token.id = user.id;
         token.name = user.name || undefined;
         token.email = user.email || undefined;
-        token.role = user.role;
-      } else if (!token.role && token.email) {
-        const dbUser = await db.user.findUnique({
-          where: { email: token.email as string },
-        });
-        if (dbUser) {
-          token.id = dbUser.id;
-          token.role = dbUser.role;
-          token.name = `${dbUser.firstName || ''} ${dbUser.lastName || ''}`.trim();
+        token.role = user.role || "USER"; // Ensure role is set with default
+        console.log("JWT callback - token updated from user:", JSON.stringify(token));
+      } else if (token && (!token.role || token.role === undefined) && token.email) {
+        // Role missing but we have email - get from DB
+        console.log("JWT callback - role missing, fetching from DB");
+        try {
+          const dbUser = await db.user.findUnique({
+            where: { email: token.email as string },
+          });
+          if (dbUser) {
+            token.id = dbUser.id;
+            token.role = dbUser.role || "USER"; // Ensure default role
+            token.name = `${dbUser.firstName || ''} ${dbUser.lastName || ''}`.trim();
+            console.log("JWT callback - token updated from DB:", JSON.stringify(token));
+          } else {
+            // User not in DB, set default role
+            token.role = "USER";
+            console.log("JWT callback - user not in DB, set default role");
+          }
+        } catch (error) {
+          console.error("Error fetching user in JWT callback:", error);
+          // Fail-safe default role
+          token.role = "USER";
         }
       }
+      
+      console.log("JWT callback - final token:", JSON.stringify(token));
       return token;
     },
     async session({ token, session }) {
+      console.log("Session callback - token:", JSON.stringify(token));
+      
       if (token) {
         session.user.id = token.id as string;
         session.user.name = token.name as string;
         session.user.email = token.email as string;
-        session.user.role = token.role as string;
+        session.user.role = (token.role as string) || "USER"; // Ensure role with default
+        console.log("Session callback - updated session:", JSON.stringify(session));
       }
       return session;
     },
