@@ -8,7 +8,7 @@ import { toast } from "sonner";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useForm } from "react-hook-form";
 import { z } from "zod";
-import { useSearchParams, useRouter } from "next/navigation";
+import { useSearchParams } from "next/navigation";
 import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from "@/components/ui/form";
 
 const formSchema = z.object({
@@ -23,7 +23,6 @@ const formSchema = z.object({
 export function LoginForm() {
   const [isLoading, setIsLoading] = useState(false);
   const searchParams = useSearchParams();
-  const router = useRouter();
   const callbackUrl = searchParams.get("callbackUrl") || "";
   
   const form = useForm<z.infer<typeof formSchema>>({
@@ -36,19 +35,27 @@ export function LoginForm() {
 
   async function onSubmit(values: z.infer<typeof formSchema>) {
     setIsLoading(true);
+    
+    // Determine if this is likely an admin user
+    const isAdminEmail = values.email.includes("admin") || values.email === "admin@example.com";
+    
+    // Determine the callback URL based on user role and existing callbackUrl
+    const targetCallbackUrl = callbackUrl || (isAdminEmail ? "/admin/dashboard" : "/user/dashboard");
+    
     console.log("Login attempt with:", { 
       email: values.email, 
-      callbackUrl: callbackUrl || "/user/dashboard" 
+      callbackUrl: targetCallbackUrl
     });
   
     try {
-      // Log pre-signin state
       console.log("About to call signIn with credentials");
       
+      // Include the callbackUrl parameter again to let NextAuth handle the redirect
       const result = await signIn("credentials", {
         email: values.email,
         password: values.password,
-        redirect: false, // Keep as false to handle redirects programmatically
+        redirect: false,
+        callbackUrl: targetCallbackUrl,
       });
       
       console.log("SignIn result:", result);
@@ -64,26 +71,18 @@ export function LoginForm() {
         // Success message
         toast.success("Giriş başarılı! Yönlendiriliyorsunuz...");
         
-        // We can try to detect if this is an admin login by checking the email
-        const isAdminEmail = values.email.includes("admin") || values.email === "admin@example.com";
-        
-        // Determine where to redirect based on callbackUrl or user role
-        let redirectPath;
-        if (callbackUrl) {
-          redirectPath = callbackUrl;
-        } else {
-          redirectPath = isAdminEmail ? "/admin/dashboard" : "/user/dashboard";
-        }
-        
+        // Get the final redirect path, preferring the result.url if available
+        const redirectPath = result.url || targetCallbackUrl;
         console.log("Redirecting to:", redirectPath);
         
-        // Use router.push for client-side navigation
-        // This preserves the authentication context
+        // Increase timeout to ensure session is established
         setTimeout(() => {
-          router.push(redirectPath);
-        }, 500);
+          console.log("Session should be established, navigating to:", redirectPath);
+          
+          // Force a page reload to ensure the session is picked up
+          window.location.href = redirectPath;
+        }, 1500); // Increased from 500ms to 1500ms
       } else {
-        // Handle unexpected response
         console.error("Unexpected auth response:", result);
         toast.error("Beklenmeyen bir hata oluştu");
         setIsLoading(false);
