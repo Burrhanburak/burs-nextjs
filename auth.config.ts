@@ -56,7 +56,7 @@ const authConfig: NextAuthConfig = {
         try {
           // Veritabanından kullanıcı sorgusu
           const user = await db.user.findUnique({
-            where: { email: credentials.email }
+            where: { email: credentials.email as string }
           });
           console.log("User found:", user ? "Yes" : "No");
           if (!user || !user.password) {
@@ -64,9 +64,11 @@ const authConfig: NextAuthConfig = {
           }
 
           // Şifre doğrulama - bcrypt kullanıyorsanız
-          const passwordMatch = await bcrypt.compare(credentials.password, user.password);
+          const passwordMatch = await bcrypt.compare(
+            credentials.password as string, 
+            user.password
+          );
           console.log("Password match:", passwordMatch);
-    
           
           if (!passwordMatch) {
             return null;
